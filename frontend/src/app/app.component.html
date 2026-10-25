@@ -1,0 +1,34 @@
+<main>
+  <h1>Week 6 DevOps Demo</h1>
+  <p>
+    This UI validates payloads against the repository-derived 300-feature schema and calls the Flask API.
+    GitHub Pages hosts only this static frontend.
+  </p>
+
+  <section class="status">
+    <p><strong>Schema:</strong> {{ schemaLoaded ? 'loaded' : 'loading...' }}</p>
+    <p><strong>Backend health:</strong> {{ healthMessage }}</p>
+  </section>
+
+  <form (ngSubmit)="submit()" novalidate>
+    <label for="payload">Prediction payload (JSON)</label>
+    <textarea
+      id="payload"
+      [formControl]="payloadControl"
+      rows="16"
+      placeholder="{ ... 300 feature fields ... }"
+    ></textarea>
+
+    <div class="error" *ngIf="validationError">{{ validationError }}</div>
+
+    <button type="submit" [disabled]="!schemaLoaded">Predict</button>
+  </form>
+
+  <section *ngIf="resultMessage" class="result">
+    <strong>Result:</strong> {{ resultMessage }}
+  </section>
+
+  <section *ngIf="errorMessage" class="error">
+    <strong>Error:</strong> {{ errorMessage }}
+  </section>
+</main>
