@@ -4,7 +4,7 @@ This repository now includes a complete Week 6-style backend + frontend + CI/CD 
 
 ## Deployed application
 
-[Open the deployed frontend on GitHub Pages](https://muhammadtalhazafar10.github.io/devproj/)
+[Open the latest Angular GitHub Pages viewer for the Jupyter Notebook contents](https://muhammadtalhazafar10.github.io/devproj/)
 
 ## Repository structure
 
