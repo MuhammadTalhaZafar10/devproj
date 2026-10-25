@@ -11,9 +11,21 @@ import { PredictionApiService } from './prediction-api.service';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
+  readonly navItems = [
+    { label: 'Dashboard', icon: '⌂' },
+    { label: 'Threat Scanner', icon: '⌁' },
+    { label: 'Analysis History', icon: '◷' },
+    { label: 'Documentation', icon: '?' }
+  ];
   schemaLoaded = false;
-  healthMessage = 'not checked';
+  healthMessage = 'Checking service...';
+  healthOnline = false;
+  inferenceMode = '—';
+  featureCount = 0;
+  activeNav = 'Dashboard';
+  isScanning = false;
   resultMessage = '';
+  resultLabel = '';
   errorMessage = '';
   validationError = '';
   featureNames: string[] = [];
@@ -36,6 +48,7 @@ export class AppComponent implements OnInit {
       const sampleData = await sampleRes.json() as Record<string, number>;
 
       this.featureNames = schemaData.features;
+      this.featureCount = this.featureNames.length;
       this.payloadControl.setValue(JSON.stringify(sampleData, null, 2));
       this.schemaLoaded = true;
     } catch {
@@ -48,10 +61,14 @@ export class AppComponent implements OnInit {
       catchError(() => of(null))
     ).subscribe((health) => {
       if (!health) {
-        this.healthMessage = 'backend unavailable (frontend remains usable)';
+        this.healthMessage = 'Backend unavailable';
+        this.healthOnline = false;
         return;
       }
-      this.healthMessage = `${health.status} (${health.inference_mode})`;
+      this.healthMessage = 'System operational';
+      this.healthOnline = true;
+      this.inferenceMode = health.inference_mode;
+      this.featureCount = health.feature_count;
     });
   }
 
@@ -104,14 +121,32 @@ export class AppComponent implements OnInit {
       return;
     }
 
+    this.isScanning = true;
     this.api.predict(payload).subscribe({
       next: (response) => {
-        this.resultMessage = `${response.prediction} [${response.inference_mode}]${response.note ? ` - ${response.note}` : ''}`;
+        this.isScanning = false;
+        this.resultLabel = response.prediction;
+        this.resultMessage = response.note || `Analysis completed using ${response.inference_mode} inference.`;
       },
       error: (err) => {
+        this.isScanning = false;
         const apiMessage = err?.error?.error;
         this.errorMessage = apiMessage || 'Backend request failed. Ensure Flask is running locally.';
       }
     });
+  }
+
+  loadSample(): void {
+    this.validationError = '';
+    fetch('sample_request.json')
+      .then((response) => response.json() as Promise<Record<string, number>>)
+      .then((sample) => this.payloadControl.setValue(JSON.stringify(sample, null, 2)))
+      .catch(() => {
+        this.validationError = 'Unable to load the sample payload.';
+      });
+  }
+
+  selectNav(label: string): void {
+    this.activeNav = label;
   }
 }
