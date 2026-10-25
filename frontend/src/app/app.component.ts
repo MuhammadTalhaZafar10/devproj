@@ -1,152 +1,61 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { catchError, of } from 'rxjs';
-import { PredictionApiService } from './prediction-api.service';
+import { Component } from '@angular/core';
+
+interface ModelResult {
+  name: string;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  macroF1: number;
+  weightedF1: number;
+  trainingTime: number;
+}
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
-  readonly navItems = [
-    { label: 'Dashboard', icon: '⌂' },
-    { label: 'Threat Scanner', icon: '⌁' },
-    { label: 'Analysis History', icon: '◷' },
-    { label: 'Documentation', icon: '?' }
+export class AppComponent {
+  readonly modelResults: ModelResult[] = [
+    {
+      name: 'LightGBM',
+      accuracy: 0.9212,
+      precision: 0.8968,
+      recall: 0.9098,
+      macroF1: 0.903,
+      weightedF1: 0.9217,
+      trainingTime: 12.036
+    },
+    {
+      name: 'Random Forest',
+      accuracy: 0.8931,
+      precision: 0.878,
+      recall: 0.8538,
+      macroF1: 0.8646,
+      weightedF1: 0.8917,
+      trainingTime: 15.871
+    }
   ];
-  schemaLoaded = false;
-  healthMessage = 'Checking service...';
-  healthOnline = false;
-  inferenceMode = '—';
-  featureCount = 0;
-  activeNav = 'Dashboard';
-  isScanning = false;
-  resultMessage = '';
-  resultLabel = '';
-  errorMessage = '';
-  validationError = '';
-  featureNames: string[] = [];
-  payloadControl = new FormControl<string>('', { nonNullable: true });
 
-  constructor(private readonly api: PredictionApiService) {}
+  readonly highlights = [
+    { label: 'Final observations', value: '100,000', detail: 'Selected real rows' },
+    { label: 'Processed features', value: '300', detail: 'After preprocessing' },
+    { label: 'Training rows', value: '80,000', detail: '80% of the split' },
+    { label: 'Testing rows', value: '20,000', detail: '20% of the split' }
+  ];
 
-  ngOnInit(): void {
-    this.bootstrapSchema();
-    this.checkHealth();
-  }
+  readonly topFeatures = [
+    { name: 'rolling_mean_3', importance: 3194 },
+    { name: 'energy_lag_1', importance: 1932 },
+    { name: 'rolling_std_24', importance: 1101 },
+    { name: 'rolling_mean_24', importance: 583 },
+    { name: 'hour', importance: 519 },
+    { name: 'hour_sin', importance: 485 },
+    { name: 'building_id_kaggle', importance: 481 },
+    { name: 'energy_lag_24', importance: 479 }
+  ];
 
-  private async bootstrapSchema(): Promise<void> {
-    try {
-      const [schemaRes, sampleRes] = await Promise.all([
-        fetch('feature_schema.json'),
-        fetch('sample_request.json')
-      ]);
-      const schemaData = await schemaRes.json() as { features: string[] };
-      const sampleData = await sampleRes.json() as Record<string, number>;
-
-      this.featureNames = schemaData.features;
-      this.featureCount = this.featureNames.length;
-      this.payloadControl.setValue(JSON.stringify(sampleData, null, 2));
-      this.schemaLoaded = true;
-    } catch {
-      this.validationError = 'Unable to load local schema/sample assets.';
-    }
-  }
-
-  private checkHealth(): void {
-    this.api.health().pipe(
-      catchError(() => of(null))
-    ).subscribe((health) => {
-      if (!health) {
-        this.healthMessage = 'Backend unavailable';
-        this.healthOnline = false;
-        return;
-      }
-      this.healthMessage = 'System operational';
-      this.healthOnline = true;
-      this.inferenceMode = health.inference_mode;
-      this.featureCount = health.feature_count;
-    });
-  }
-
-  private parseAndValidatePayload(raw: string): Record<string, number> | null {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      this.validationError = 'Payload must be valid JSON.';
-      return null;
-    }
-
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      this.validationError = 'Payload must be a JSON object.';
-      return null;
-    }
-
-    const payload = parsed as Record<string, unknown>;
-    const keys = Object.keys(payload);
-    const missing = this.featureNames.filter((name) => !keys.includes(name));
-    const extra = keys.filter((name) => !this.featureNames.includes(name));
-
-    if (missing.length) {
-      this.validationError = `Missing required fields (${missing.length}). First: ${missing.slice(0, 5).join(', ')}`;
-      return null;
-    }
-    if (extra.length) {
-      this.validationError = `Unexpected fields (${extra.length}). First: ${extra.slice(0, 5).join(', ')}`;
-      return null;
-    }
-
-    const normalized: Record<string, number> = {};
-    for (const feature of this.featureNames) {
-      const value = Number(payload[feature]);
-      if (!Number.isFinite(value)) {
-        this.validationError = `Field '${feature}' must be a finite number.`;
-        return null;
-      }
-      normalized[feature] = value;
-    }
-    this.validationError = '';
-    return normalized;
-  }
-
-  submit(): void {
-    this.resultMessage = '';
-    this.errorMessage = '';
-    const payload = this.parseAndValidatePayload(this.payloadControl.value);
-    if (!payload) {
-      return;
-    }
-
-    this.isScanning = true;
-    this.api.predict(payload).subscribe({
-      next: (response) => {
-        this.isScanning = false;
-        this.resultLabel = response.prediction;
-        this.resultMessage = response.note || `Analysis completed using ${response.inference_mode} inference.`;
-      },
-      error: (err) => {
-        this.isScanning = false;
-        const apiMessage = err?.error?.error;
-        this.errorMessage = apiMessage || 'Backend request failed. Ensure Flask is running locally.';
-      }
-    });
-  }
-
-  loadSample(): void {
-    this.validationError = '';
-    fetch('sample_request.json')
-      .then((response) => response.json() as Promise<Record<string, number>>)
-      .then((sample) => this.payloadControl.setValue(JSON.stringify(sample, null, 2)))
-      .catch(() => {
-        this.validationError = 'Unable to load the sample payload.';
-      });
-  }
-
-  selectNav(label: string): void {
-    this.activeNav = label;
-  }
+  readonly maxImportance = 3194;
 }
