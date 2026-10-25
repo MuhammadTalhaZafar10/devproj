@@ -2,6 +2,10 @@
 
 This repository now includes a complete Week 6-style backend + frontend + CI/CD setup while preserving the existing notebook/dataset context.
 
+## Deployed application
+
+[Open the deployed frontend on GitHub Pages](https://muhammadtalhazafar10.github.io/devproj/)
+
 ## Repository structure
 
 - `backend/` Flask API (`/health`, `/predict`)
