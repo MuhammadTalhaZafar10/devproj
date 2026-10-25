@@ -1,116 +1,115 @@
-# devproj - Week 6 DevOps Lab
+# CyberGuard Malware Detection Platform
 
-This repository now includes a complete Week 6-style backend + frontend + CI/CD setup while preserving the existing notebook/dataset context.
+CyberGuard is a full-stack malware-risk analysis project built around a schema-validated Flask API and a responsive Angular security dashboard. The application analyzes a fixed set of 300 malware features and returns a risk classification from the available inference model.
 
-## Repository structure
+## Live application
 
-- `backend/` Flask API (`/health`, `/predict`)
-- `backend/tests/` pytest coverage for API + required structure
-- `backend/models/` safe schema artifact (`feature_schema.json`) and model notes
-- `data/` non-sensitive sample request payload
-- `docs/` provenance, environment, and limitations
-- `frontend/` Angular 19 standalone app
-- `.github/workflows/ci.yml` backend tests + frontend build on push/PR to `main`
-- `.github/workflows/pages.yml` static Angular deployment to GitHub Pages
+The Angular frontend is deployed to GitHub Pages:
 
-## Provenance and model context
+**https://muhammadtalhazafar10.github.io/devproj/**
 
-- Existing notebook analyzed: `devfinal;.ipynb`
-- Existing dataset archive analyzed: `BDG2_final_100k.zip` (`BDG2_final_100k.csv`)
-- Derived schema: 300 feature columns + `target` label (`Low`/`Medium`/`High`)
-- Generated artifact: `backend/models/feature_schema.json`
+GitHub Pages hosts the static frontend only. The Flask API must be running locally or deployed separately for live health checks and predictions.
 
-No deployable trained model artifact was present in this repository.  
-Therefore, backend inference defaults to a **documented demo mode** unless `backend/models/model.joblib` (or `model.pkl`) is added.
+## Features
+
+- CyberGuard-style security dashboard with responsive dark UI
+- Hash-based Angular routing compatible with GitHub Pages
+- Schema-driven validation for all 300 prediction features
+- Sample payload loading for quick demonstrations
+- Backend health and inference-mode indicators
+- Threat analysis result panel with clear error states
+- Flask `/health` and `/predict` endpoints
+- Automated backend tests and Angular production builds with GitHub Actions
+- Automatic GitHub Pages deployment from the `main` branch
+
+## Project structure
+
+```text
+backend/                 Flask API and backend tests
+backend/models/          Feature schema and model documentation
+data/                    Sample request data
+docs/                    Environment and model documentation
+frontend/                Angular 19 standalone application
+.github/workflows/       CI and GitHub Pages deployment workflows
+```
+
+## Technology stack
+
+- **Frontend:** Angular 19, TypeScript, standalone components, reactive forms
+- **Backend:** Python, Flask, pandas, NumPy
+- **Testing:** pytest and Angular/Karma test tooling
+- **Deployment:** GitHub Actions and GitHub Pages
 
 ## Backend API
 
-### Endpoints
+### `GET /health`
 
-- `GET /health`  
-  Returns API status, feature count, and inference mode (`model` or `demo`).
+Returns the API status, configured feature count, and inference mode.
 
-- `POST /predict`  
-  Requires an exact JSON object matching all 300 schema fields.
-  - `400` for invalid JSON, missing fields, extra fields, or non-numeric values
-  - `500` for unexpected prediction-time failures
+### `POST /predict`
 
-### Local run
+Accepts a JSON object containing exactly the 300 fields defined in `backend/models/feature_schema.json`.
+
+The API returns `400 Bad Request` for:
+
+- Invalid JSON
+- Missing required fields
+- Unexpected fields
+- Non-numeric or non-finite values
+
+If no trained model artifact is available, the API uses the documented deterministic demo model and identifies that mode in the response.
+
+## Local development
+
+### Run the backend
 
 ```bash
-cd /home/runner/work/devproj/devproj
 python -m venv .venv
 source .venv/bin/activate
 pip install -r backend/requirements.txt
 python backend/app.py
 ```
 
-### Backend tests
+The backend runs at `http://127.0.0.1:5000`.
+
+### Run the Angular frontend
 
 ```bash
-cd /home/runner/work/devproj/devproj
-pip install -r backend/requirements.txt
-pytest backend/tests -q
-```
-
-## Frontend (Angular)
-
-The Angular app uses schema-driven JSON validation and calls `/api/health` + `/api/predict`.
-
-Local development uses proxy forwarding:
-- `/api/*` -> `http://127.0.0.1:5000/*`
-
-### Local run
-
-```bash
-cd /home/runner/work/devproj/devproj/frontend
+cd frontend
 npm ci
 npm start
 ```
 
-### Production build
+The Angular development server runs at `http://localhost:4200` and proxies `/api` requests to the local Flask service.
+
+### Build for production
 
 ```bash
-cd /home/runner/work/devproj/devproj/frontend
-npm run build
+cd frontend
+npm run build -- --configuration production
 ```
 
-For GitHub Pages, workflow builds with:
+The Pages artifact is generated at `frontend/dist/frontend/browser`.
 
-```bash
-npm run build -- --base-href "/<repo-name>/"
-```
+## Continuous integration and deployment
 
-## CI/CD behavior
+The repository includes two workflows:
 
-### CI (`.github/workflows/ci.yml`)
+- **CI:** runs backend tests and verifies the Angular production build on pushes and pull requests targeting `main`.
+- **GitHub Pages:** builds the Angular application with the repository base path, verifies the browser artifact, and deploys it to GitHub Pages after changes reach `main`.
 
-On push/PR to `main`:
-1. Install backend dependencies and run `pytest backend/tests -q`
-2. Run `npm ci` and `npm run build` in `frontend/`
+## Model and data notes
 
-### Pages deployment (`.github/workflows/pages.yml`)
+The project includes the derived 300-feature schema and safe sample payloads from the existing malware dataset and notebook context. No deployable trained model artifact is committed. For that reason, the backend uses demo inference until `backend/models/model.joblib` or `backend/models/model.pkl` is supplied.
 
-On push to `main`:
-1. Build Angular frontend with repository base href
-2. Upload static artifact `frontend/dist/frontend/browser`
-3. Deploy to GitHub Pages using official Pages actions
+Demo predictions are intended for integration and demonstration purposes. They should not be interpreted as validated production malware detections without reproducible training, model evaluation, versioned artifacts, and an appropriate security review.
 
-## Important limitation: Pages is static-only
+## Security
 
-GitHub Pages cannot host Flask/Python inference.
+- No secrets or tokens are committed.
+- Local environments, dependency directories, build output, and unapproved model artifacts are excluded through `.gitignore`.
+- Prediction inputs are strictly validated against the feature schema before inference.
 
-- The deployed site is frontend-only.
-- Live inference requires running Flask locally or hosting backend separately.
-- The frontend handles backend-unavailable scenarios with clear messaging.
+## Maintainer
 
-## Security and data handling
-
-- No secrets/tokens are committed.
-- `.gitignore` excludes virtual envs, node modules, build output, cache, env files, and unapproved model/data artifacts.
-- Only commit-safe schema/sample artifacts are included for CI reproducibility.
-
-## Research / ethics disclaimer
-
-The default demo mode output is integration-oriented and must not be interpreted as validated real-world predictive performance.  
-Any production use requires validated training reproducibility, versioned model artifact governance, and domain-appropriate risk review.
+- Muhammad Talha Zafar
