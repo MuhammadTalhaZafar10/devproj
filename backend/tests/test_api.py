@@ -69,3 +69,33 @@ def test_predict_invalid_json(client):
     )
     assert response.status_code == 400
     assert response.get_json()["error"] == "Invalid JSON payload."
+
+
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("extra_field", 1, "Unexpected fields"),
+        ("hour", "not-a-number", "must be numeric"),
+        ("hour", float("nan"), "must be finite"),
+        ("hour", float("inf"), "must be finite"),
+    ],
+)
+def test_predict_rejects_invalid_fields(client, field, value, message):
+    payload = load_sample_payload()
+    if field == "extra_field":
+        payload[field] = value
+    else:
+        payload[field] = value
+    response = client.post("/predict", json=payload)
+    assert response.status_code == 400
+    assert message in response.get_json()["error"]
+
+
+def test_predict_response_contains_uncertainty_fields(client):
+    response = client.post("/predict", json=load_sample_payload())
+    assert response.status_code == 200
+    body = response.get_json()
+    assert body["model_version"]
+    assert set(body["probabilities"]) <= {"Low", "Medium", "High"}
+    assert body["conformal_prediction_set"]
+    assert body["prediction"] in {"Low", "Medium", "High"}
