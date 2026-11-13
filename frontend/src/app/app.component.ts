@@ -181,12 +181,12 @@ export class AppComponent implements OnInit {
   ];
 
   readonly paperComparison = [
-    { name: 'Random Forest', paper: 'Compared', project: 'Notebook baseline', result: '89.31% accuracy', tone: 'baseline' },
-    { name: 'GBM', paper: 'Compared', project: 'Not retrained', result: 'Method retained in review', tone: 'reference' },
-    { name: 'XGBoost', paper: 'Compared', project: 'Not retrained', result: 'Method retained in review', tone: 'reference' },
-    { name: 'LightGBM', paper: 'Compared', project: 'Notebook baseline', result: '92.12% accuracy', tone: 'baseline' },
-    { name: 'CatBoost', paper: 'Compared', project: 'Not retrained', result: 'Method retained in review', tone: 'reference' },
-    { name: 'HistGradientBoosting', paper: 'Adapted here', project: 'Trained model', result: '91.68% + 91.68% coverage', tone: 'novelty' }
+    { name: 'Random Forest', paper: 'Evaluated in paper', project: 'BDG2 baseline', result: '89.31% accuracy', tone: 'baseline' },
+    { name: 'GBM', paper: 'Evaluated in paper', project: 'Not run in BDG2', result: 'Published paper comparison', tone: 'reference' },
+    { name: 'XGBoost', paper: 'Published winner', project: 'Not run in BDG2', result: 'Ranked first across paper building types', tone: 'published' },
+    { name: 'LightGBM', paper: 'Evaluated in paper', project: 'BDG2 baseline', result: '92.12% accuracy', tone: 'baseline' },
+    { name: 'CatBoost', paper: 'Evaluated in paper', project: 'Not run in BDG2', result: 'Published paper comparison', tone: 'reference' },
+    { name: 'HistGradientBoosting', paper: 'Our adaptation', project: 'Trained on BDG2', result: '91.68% accuracy + 91.68% coverage', tone: 'novelty' }
   ];
 
   readonly basePaper = {

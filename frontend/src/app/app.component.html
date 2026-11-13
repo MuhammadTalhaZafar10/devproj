@@ -91,9 +91,21 @@
             <span>{{ model.paper }}</span>
             <strong>{{ model.name }}</strong>
           </div>
-          <p>{{ model.project }}</p>
+          <p><b>Our BDG2 result:</b> {{ model.project }}</p>
           <small>{{ model.result }}</small>
         </article>
+      </div>
+      <div class="comparison-ledger">
+        <div>
+          <span class="card-index">PUBLISHED EVIDENCE</span>
+          <strong>2024 paper: XGBoost ranked first</strong>
+          <p>Wu et al. report the best model ranking across their evaluated building types. Their exact dataset and task are different, so this is a reference result, not a copied score.</p>
+        </div>
+        <div>
+          <span class="card-index">OUR MEASURED RESULT</span>
+          <strong>BDG2: 91.68% accuracy + 91.68% coverage</strong>
+          <p>Our reproducible HistGradientBoosting model is evaluated on the frozen BDG2 test set and adds calibrated conformal prediction sets.</p>
+        </div>
       </div>
       <article class="paper-card">
         <div>
