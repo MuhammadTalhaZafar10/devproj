@@ -8,6 +8,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 
 try:
     import joblib
@@ -72,6 +73,7 @@ def unpack_model(model: Any) -> tuple[Any, str, float | None, list[str]]:
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    CORS(app, resources={r"/*": {"origins": os.getenv("CORS_ORIGINS", "*")}})
     schema = load_schema()
     feature_names: list[str] = schema["features"]
     loaded_model, mode = load_runtime_model()

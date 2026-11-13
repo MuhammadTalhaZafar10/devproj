@@ -29,6 +29,16 @@ coverage on the frozen 20,000-row test set. The artifact is intentionally
 ignored by Git because it is a generated binary; rerun
 `python backend/train_model.py` to regenerate it.
 
+## Public backend deployment
+
+The Flask service is containerized for Render with `Dockerfile` and
+`render.yaml`. The validated `backend/models/model.joblib` is included in the deployment
+branch so the container can load it. GitHub Pages cannot host this service.
+Set `CORS_ORIGINS` to the Pages origin and
+set `globalThis.__BDG2_API_URL__` before the Angular build when connecting the
+deployed frontend to the hosted API. Local development continues to use the
+Angular `/api` proxy.
+
 ## References
 
 - Miller et al. (2020), *Scientific Data*, DOI:
