@@ -4,6 +4,7 @@
     <nav aria-label="Main navigation">
       <a href="#overview">Overview</a>
       <a href="#research">Research contribution</a>
+      <a href="#comparison">Comparison</a>
       <a href="#live">Try prediction</a>
     </nav>
   </header>
@@ -73,6 +74,33 @@
         BDG2 provenance follows Miller et al. (2020). This project extends that
         foundation with ordinal uncertainty reporting.
       </p>
+    </section>
+
+    <section class="section-block" id="comparison">
+      <div class="section-heading">
+        <div>
+          <p class="kicker">BASE PAPER → THIS PROJECT</p>
+          <h2>What changed and why it matters</h2>
+        </div>
+        <p class="section-note">The 2024 paper compares ensemble learners; this project adds calibrated uncertainty to the decision.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="comparison-card" *ngFor="let model of paperComparison" [class]="model.tone">
+          <div class="comparison-top">
+            <span>{{ model.paper }}</span>
+            <strong>{{ model.name }}</strong>
+          </div>
+          <p>{{ model.project }}</p>
+          <small>{{ model.result }}</small>
+        </article>
+      </div>
+      <div class="improvement-panel">
+        <span class="card-index">OUR EXTENSION</span>
+        <h3>From “which class?” to “which class, and how certain?”</h3>
+        <div class="improvement-flow">
+          <span>Ensemble prediction</span><b>+</b><span>Calibration split</span><b>+</b><span>Conformal set</span><b>→</b><strong>Actionable uncertainty</strong>
+        </div>
+      </div>
     </section>
 
     <section class="section-block">
@@ -165,7 +193,7 @@
         <article class="info-card control-card">
           <span class="card-index">INPUT CONTROLS</span>
           <h3>Change features</h3>
-          <p>Adjust a few meaningful inputs. The app preserves the remaining schema fields and sends all 300 features to Flask.</p>
+          <p>These are preprocessed model features. The app preserves the remaining schema fields and sends all 300 features to Flask.</p>
           <form (ngSubmit)="submitPrediction()">
             <label *ngFor="let field of editableFields">
               <span>{{ field.label }}</span>
