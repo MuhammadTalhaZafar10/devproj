@@ -1,0 +1,8 @@
+.git
+.github
+.venv
+frontend
+BDG2_final_100k.zip
+devfinal;.ipynb
+__pycache__
+*.pyc

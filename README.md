@@ -124,6 +124,11 @@ GitHub Pages cannot host Flask/Python inference.
 - Live inference requires running Flask locally or hosting backend separately.
 - The frontend handles backend-unavailable scenarios with clear messaging.
 
+For a separate public backend, use the included `Dockerfile` and `render.yaml`.
+The validated `backend/models/model.joblib` artifact is included for the
+container deployment; rerun `python backend/train_model.py` whenever the model
+or dataset version changes.
+
 ## Security and data handling
 
 - No secrets/tokens are committed.

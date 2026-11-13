@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+const configuredApiUrl = (globalThis as typeof globalThis & { __BDG2_API_URL__?: string }).__BDG2_API_URL__;
+const isPages = globalThis.location?.hostname.endsWith('.github.io') ?? false;
+const apiBaseUrl = configuredApiUrl || (isPages ? 'https://bdg2-uncertainty-api.onrender.com' : '/api');
+
 @Injectable({ providedIn: 'root' })
 export class PredictionApiService {
   constructor(private readonly http: HttpClient) {}
@@ -11,7 +15,7 @@ export class PredictionApiService {
       inference_mode: string;
       feature_count: number;
       model_version: string;
-    }>('/api/health');
+    }>(`${apiBaseUrl}/health`);
   }
 
   predict(payload: Record<string, number>) {
@@ -22,6 +26,6 @@ export class PredictionApiService {
       probabilities: Record<string, number>;
       conformal_prediction_set: string[];
       note?: string;
-    }>('/api/predict', payload);
+    }>(`${apiBaseUrl}/predict`, payload);
   }
 }

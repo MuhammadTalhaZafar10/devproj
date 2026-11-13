@@ -21,7 +21,6 @@ dist/
 
 data/*.csv
 data/*.parquet
-backend/models/*.joblib
 backend/models/*.pkl
 backend/models/*.h5
 

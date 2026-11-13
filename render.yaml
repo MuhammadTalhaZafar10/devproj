@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: bdg2-uncertainty-api
+    runtime: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /health
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: CORS_ORIGINS
+        value: https://muhammadtalhazafar10.github.io
