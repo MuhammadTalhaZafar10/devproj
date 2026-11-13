@@ -2,8 +2,13 @@
 
 ## Methodological framing
 
-This project adapts the ensemble-learning and explainable-AI comparison described
-by the 2024 PLOS ONE study, rather than claiming an exact reproduction: the
+This project uses Moon et al. (2024), *Advancing ensemble learning techniques
+for residential building electricity consumption forecasting: Insight from
+explainable artificial intelligence*, PLOS ONE 19(11), DOI
+`10.1371/journal.pone.0307654`, as its methodological base. That paper compares
+LightGBM, Random Forest, XGBoost, CatBoost, and Gradient Boosting and uses SHAP
+for interpretation. We adapt that model family rather than claiming an exact
+reproduction: the
 dataset, feature engineering, and target task differ. The BDG2 paper is cited
 as the source and provenance of the energy-meter data.
 

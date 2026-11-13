@@ -189,6 +189,14 @@ export class AppComponent implements OnInit {
     { name: 'HistGradientBoosting', paper: 'Adapted here', project: 'Trained model', result: '91.68% + 91.68% coverage', tone: 'novelty' }
   ];
 
+  readonly basePaper = {
+    authors: 'Moon, Maqsood, So, Baik, Rho & Nam',
+    title: 'Advancing ensemble learning techniques for residential building electricity consumption forecasting: Insight from explainable artificial intelligence',
+    venue: 'PLOS ONE 19(11), 2024',
+    doi: '10.1371/journal.pone.0307654',
+    models: 'LightGBM · Random Forest · XGBoost · CatBoost · Gradient Boosting'
+  };
+
   readonly highlights = [
     { label: 'Final observations', value: '100,000', detail: 'Selected real rows' },
     { label: 'Processed features', value: '300', detail: 'After preprocessing' },
