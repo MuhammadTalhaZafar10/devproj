@@ -71,7 +71,7 @@ export class AppComponent implements OnInit {
         this.loadSamplePayload(true);
       },
       error: () => {
-        this.backendState = 'Preview mode · Flask service not connected';
+        this.backendState = 'Offline fallback · Flask service unavailable';
         this.loadSamplePayload(false);
       }
     });
@@ -95,7 +95,8 @@ export class AppComponent implements OnInit {
 
   submitPrediction(): void {
     if (!this.backendAvailable) {
-      this.liveError = 'Flask is not connected. Run "python backend/app.py" and refresh this page locally.';
+      this.liveResult = this.buildOfflinePrediction();
+      this.liveError = 'Offline fallback result. Run Flask locally for the trained model API.';
       return;
     }
     this.predictionLoading = true;
@@ -111,6 +112,28 @@ export class AppComponent implements OnInit {
         this.predictionLoading = false;
       }
     });
+  }
+
+  private buildOfflinePrediction(): PredictionResult {
+    const values = Object.values(this.editableValues);
+    const score = values.reduce((total, value) => total + Number(value || 0), 0) / values.length;
+    const prediction = score < -0.25 ? 'Low' : score > 0.25 ? 'High' : 'Medium';
+    const distances = [-0.5, 0, 0.5].map((center) => -Math.pow(score - center, 2));
+    const exponentials = distances.map((value) => Math.exp(value - Math.max(...distances)));
+    const total = exponentials.reduce((sum, value) => sum + value, 0);
+    const probabilities = exponentials.map((value) => value / total);
+    return {
+      prediction,
+      inference_mode: 'offline-demo',
+      model_version: 'fallback-threshold-v1',
+      probabilities: {
+        Low: Number(probabilities[0].toFixed(6)),
+        Medium: Number(probabilities[1].toFixed(6)),
+        High: Number(probabilities[2].toFixed(6))
+      },
+      conformal_prediction_set: [prediction],
+      note: 'This is an offline fallback because GitHub Pages cannot host Flask. Start backend/app.py for trained-model inference.'
+    };
   }
 
   readonly modelResults: ModelResult[] = [
