@@ -129,6 +129,12 @@ The validated `backend/models/model.joblib` artifact is included for the
 container deployment; rerun `python backend/train_model.py` whenever the model
 or dataset version changes.
 
+The Pages frontend can also connect directly to a teacher's local Flask
+service: run `python backend/app.py`, open the Pages URL, and refresh. The
+editable prediction controls preserve the remaining schema fields and submit
+all 300 features to `/predict`. A public Render service still requires linking
+the repository to a Render account.
+
 ## Security and data handling
 
 - No secrets/tokens are committed.
