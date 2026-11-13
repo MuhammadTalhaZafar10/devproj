@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 const configuredApiUrl = (globalThis as typeof globalThis & { __BDG2_API_URL__?: string }).__BDG2_API_URL__;
 const isPages = globalThis.location?.hostname.endsWith('.github.io') ?? false;
-const apiBaseUrl = configuredApiUrl || (isPages ? 'https://bdg2-uncertainty-api.onrender.com' : '/api');
+const apiBaseUrl = configuredApiUrl || (isPages ? 'http://127.0.0.1:5000' : '/api');
 
 @Injectable({ providedIn: 'root' })
 export class PredictionApiService {
