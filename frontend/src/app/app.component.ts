@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { PredictionApiService } from './prediction-api.service';
 
 interface ModelResult {
@@ -12,23 +13,26 @@ interface ModelResult {
   trainingTime: number;
 }
 
+interface PredictionResult {
+  prediction: string;
+  inference_mode: string;
+  model_version: string;
+  probabilities: Record<string, number>;
+  conformal_prediction_set: string[];
+  note?: string;
+}
+
 @Component({
   selector: 'app-root',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
   backendState = 'Checking inference service...';
   backendAvailable = false;
-  liveResult: {
-    prediction: string;
-    inference_mode: string;
-    model_version: string;
-    probabilities: Record<string, number>;
-    conformal_prediction_set: string[];
-    note?: string;
-  } | null = {
+  predictionLoading = false;
+  liveResult: PredictionResult | null = {
     prediction: 'High',
     inference_mode: 'demo',
     model_version: 'histgb-seed42',
@@ -37,6 +41,25 @@ export class AppComponent implements OnInit {
     note: 'Preview from the validated seed-42 sample. Start Flask for live inference.'
   };
   liveError = '';
+  private samplePayload: Record<string, number> = {};
+  editableValues: Record<string, number> = {
+    hour: 12,
+    day: 15,
+    month: 6,
+    energy_lag_1: 0,
+    energy_lag_24: 0,
+    rolling_mean_3: 0,
+    rolling_mean_24: 0
+  };
+  readonly editableFields = [
+    { key: 'hour', label: 'Hour of day', min: 0, max: 23, step: 1 },
+    { key: 'day', label: 'Day of month', min: 1, max: 31, step: 1 },
+    { key: 'month', label: 'Month', min: 1, max: 12, step: 1 },
+    { key: 'energy_lag_1', label: 'Energy lag · 1 hour', min: -100000, max: 100000, step: 0.01 },
+    { key: 'energy_lag_24', label: 'Energy lag · 24 hours', min: -100000, max: 100000, step: 0.01 },
+    { key: 'rolling_mean_3', label: 'Rolling mean · 3 hours', min: -100000, max: 100000, step: 0.01 },
+    { key: 'rolling_mean_24', label: 'Rolling mean · 24 hours', min: -100000, max: 100000, step: 0.01 }
+  ];
 
   constructor(private readonly predictionApi: PredictionApiService) {}
 
@@ -45,24 +68,48 @@ export class AppComponent implements OnInit {
       next: (health) => {
         this.backendAvailable = true;
         this.backendState = `Connected · ${health.inference_mode} · ${health.model_version}`;
-        this.loadSamplePrediction();
+        this.loadSamplePayload(true);
       },
       error: () => {
         this.backendState = 'Preview mode · Flask service not connected';
+        this.loadSamplePayload(false);
       }
     });
   }
 
-  private loadSamplePrediction(): void {
+  private loadSamplePayload(runPrediction: boolean): void {
     fetch('sample_request.json')
       .then((response) => response.json())
       .then((payload: Record<string, number>) => {
-        this.predictionApi.predict(payload).subscribe({
-          next: (result) => this.liveResult = result,
-          error: () => this.liveError = 'The backend rejected the sample request.'
-        });
+        this.samplePayload = payload;
+        for (const field of this.editableFields) {
+          this.editableValues[field.key] = payload[field.key] ?? this.editableValues[field.key];
+        }
+        if (runPrediction) {
+          this.submitPrediction();
+        }
       })
       .catch(() => this.liveError = 'Sample payload could not be loaded.');
+  }
+
+  submitPrediction(): void {
+    if (!this.backendAvailable) {
+      this.liveError = 'Flask is not connected. Run "python backend/app.py" and refresh this page locally.';
+      return;
+    }
+    this.predictionLoading = true;
+    this.liveError = '';
+    const payload = { ...this.samplePayload, ...this.editableValues };
+    this.predictionApi.predict(payload).subscribe({
+      next: (result) => {
+        this.liveResult = result;
+        this.predictionLoading = false;
+      },
+      error: () => {
+        this.liveError = 'The Flask API rejected this input. Check the values and try again.';
+        this.predictionLoading = false;
+      }
+    });
   }
 
   readonly modelResults: ModelResult[] = [
