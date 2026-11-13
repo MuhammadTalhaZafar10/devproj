@@ -12,6 +12,14 @@ reproduction: the
 dataset, feature engineering, and target task differ. The BDG2 paper is cited
 as the source and provenance of the energy-meter data.
 
+For a published model-ranking result, the dashboard also cites Wu et al.
+(2024), *A Comparative Analysis of Machine Learning-Based Energy Baseline
+Models across Multiple Building Types*, *Energies*, 17(6), 1285, DOI
+`10.3390/en17061285`. That study reports XGBoost as the most accurate model
+across its evaluated building types. This is contextual evidence rather than
+a direct BDG2 comparison because the dataset, target, features, and metrics
+differ.
+
 ## Proposed contribution
 
 The target classes have an order (`Low < Medium < High`). The implementation

@@ -197,6 +197,14 @@ export class AppComponent implements OnInit {
     models: 'LightGBM · Random Forest · XGBoost · CatBoost · Gradient Boosting'
   };
 
+  readonly resultsPaper = {
+    authors: 'Wu, Nguyen, Alahakoon, De Silva, Mills, Rathnayaka, Moraliyage & Jennings',
+    title: 'A Comparative Analysis of Machine Learning-Based Energy Baseline Models across Multiple Building Types',
+    venue: 'Energies 17(6), 1285 · 2024',
+    doi: '10.3390/en17061285',
+    finding: 'Published finding: XGBoost was the most accurate model across all building types studied.'
+  };
+
   readonly highlights = [
     { label: 'Final observations', value: '100,000', detail: 'Selected real rows' },
     { label: 'Processed features', value: '300', detail: 'After preprocessing' },
