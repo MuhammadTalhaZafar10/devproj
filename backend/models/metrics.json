@@ -1,0 +1,20 @@
+{
+  "model_version": "histgb-seed42",
+  "seed": 42,
+  "feature_count": 300,
+  "rows": 100000,
+  "train_rows": 64000,
+  "calibration_rows": 16000,
+  "test_rows": 20000,
+  "dataset_sha256": "f70f963542ae3bb173895473402e7096f0464fd5d916345135c72d688b93a50e",
+  "conformal_threshold": 0.436791133996858,
+  "metrics": {
+    "accuracy": 0.9168,
+    "balanced_accuracy": 0.90508967772141,
+    "macro_f1": 0.8985088566472501,
+    "ordinal_mae": 0.1176,
+    "log_loss": 0.17682719118895646,
+    "conformal_coverage": 0.9168,
+    "mean_prediction_set_size": 1.0
+  }
+}

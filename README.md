@@ -24,8 +24,10 @@ This repository now includes a complete Week 6-style backend + frontend + CI/CD 
 - Derived schema: 300 feature columns + `target` label (`Low`/`Medium`/`High`)
 - Generated artifact: `backend/models/feature_schema.json`
 
-No deployable trained model artifact was present in this repository.  
-Therefore, backend inference defaults to a **documented demo mode** unless `backend/models/model.joblib` (or `model.pkl`) is added.
+The reproducible training pipeline in `backend/train_model.py` creates a local
+HistGradientBoosting artifact with calibrated conformal prediction sets.
+Generated model binaries remain ignored by Git, so CI and fresh clones use the
+documented demo mode until the artifact is trained locally.
 
 ## Backend API
 
@@ -37,7 +39,21 @@ Therefore, backend inference defaults to a **documented demo mode** unless `back
 - `POST /predict`  
   Requires an exact JSON object matching all 300 schema fields.
   - `400` for invalid JSON, missing fields, extra fields, or non-numeric values
+  - model mode returns class probabilities, model version, and a conformal
+    prediction set
   - `500` for unexpected prediction-time failures
+
+### Reproduce the research run
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r backend/requirements.txt
+.venv/bin/python backend/train_model.py
+```
+
+The run uses seed 42, separates fitting/calibration/testing, and writes
+`backend/models/metrics.json`. See `docs/research_progress.md` for the
+methodological framing, results, and citations.
 
 ### Local run
 

@@ -36,6 +36,12 @@ class DemoModel:
             return [self.labels[2]]
         return [self.labels[1]]
 
+    def predict_proba(self, frame: pd.DataFrame) -> np.ndarray:
+        score = float(frame.mean(axis=1).iloc[0])
+        distances = np.array([-(score + 0.5) ** 2, -score**2, -(score - 0.5) ** 2])
+        probabilities = np.exp(distances - distances.max())
+        return np.array([probabilities / probabilities.sum()])
+
 
 def load_schema() -> dict[str, Any]:
     with SCHEMA_PATH.open("r", encoding="utf-8") as f:
@@ -51,11 +57,25 @@ def load_runtime_model() -> tuple[Any, str]:
     return DemoModel(), "demo"
 
 
+def unpack_model(model: Any) -> tuple[Any, str, float | None, list[str]]:
+    if isinstance(model, dict) and "estimator" in model:
+        return (
+            model["estimator"],
+            str(model.get("model_version", "trained-unknown")),
+            float(model["conformal_threshold"])
+            if model.get("conformal_threshold") is not None
+            else None,
+            [str(value) for value in model.get("classes", DemoModel.labels)],
+        )
+    return model, "legacy-artifact", None, DemoModel.labels
+
+
 def create_app() -> Flask:
     app = Flask(__name__)
     schema = load_schema()
     feature_names: list[str] = schema["features"]
-    model, mode = load_runtime_model()
+    loaded_model, mode = load_runtime_model()
+    model, model_version, conformal_threshold, class_labels = unpack_model(loaded_model)
 
     def validate_payload(payload: Any) -> tuple[dict[str, float] | None, str | None]:
         if not isinstance(payload, dict):
@@ -89,6 +109,7 @@ def create_app() -> Flask:
                 "status": "ok",
                 "inference_mode": mode,
                 "feature_count": len(feature_names),
+                "model_version": model_version,
             }
         )
 
@@ -105,10 +126,42 @@ def create_app() -> Flask:
 
         try:
             frame = pd.DataFrame([validated], columns=feature_names)
-            prediction = model.predict(frame)[0]
+            raw_prediction = model.predict(frame)[0]
+            if hasattr(model, "predict_proba"):
+                probabilities = model.predict_proba(frame)[0]
+                classes = [
+                    class_labels[int(value)]
+                    for value in getattr(model, "classes_", range(len(probabilities)))
+                ]
+                probability_map = {
+                    label: round(float(probability), 6)
+                    for label, probability in zip(classes, probabilities)
+                }
+                if conformal_threshold is not None:
+                    prediction_set = [
+                        label
+                        for label, probability in probability_map.items()
+                        if probability >= 1.0 - conformal_threshold
+                    ]
+                    if not prediction_set:
+                        prediction_set = [classes[int(np.argmax(probabilities))]]
+                else:
+                    prediction_set = [classes[int(np.argmax(probabilities))]]
+            else:
+                probability_map = {}
+                prediction_set = [str(raw_prediction)]
+            prediction = (
+                class_labels[int(raw_prediction)]
+                if isinstance(raw_prediction, (int, np.integer))
+                and 0 <= int(raw_prediction) < len(class_labels)
+                else str(raw_prediction)
+            )
             response = {
-                "prediction": str(prediction),
+                "prediction": prediction,
                 "inference_mode": mode,
+                "model_version": model_version,
+                "probabilities": probability_map,
+                "conformal_prediction_set": prediction_set,
             }
             if mode != "model":
                 response["note"] = (

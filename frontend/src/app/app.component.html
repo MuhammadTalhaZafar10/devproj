@@ -99,6 +99,37 @@
       </div>
     </section>
 
+    <section class="section-block live-panel" id="live">
+      <div class="section-heading">
+        <div>
+          <p class="kicker">LOCAL API CHECK</p>
+          <h2>Uncertainty-aware live inference</h2>
+        </div>
+        <p class="section-note">{{ backendState }}</p>
+      </div>
+      <div class="context-grid">
+        <article class="info-card" *ngIf="liveResult as result; else liveUnavailable">
+          <span class="card-index">LIVE</span>
+          <h3>{{ result.prediction }}</h3>
+          <p>Model {{ result.model_version }} · {{ result.inference_mode }} inference</p>
+          <dl>
+            <div><dt>Prediction set</dt><dd>{{ result.conformal_prediction_set.join(', ') }}</dd></div>
+            <div *ngFor="let item of result.probabilities | keyvalue">
+              <dt>{{ item.key }} probability</dt><dd>{{ item.value | percent: '1.1-1' }}</dd>
+            </div>
+          </dl>
+          <small *ngIf="result.note">{{ result.note }}</small>
+        </article>
+        <ng-template #liveUnavailable>
+          <article class="info-card">
+            <span class="card-index">INFO</span>
+            <h3>Static dashboard remains available</h3>
+            <p>{{ liveError || 'Run Flask locally to enable this panel.' }}</p>
+          </article>
+        </ng-template>
+      </div>
+    </section>
+
     <section class="section-block" id="features">
       <div class="section-heading">
         <div>

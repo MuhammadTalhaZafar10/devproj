@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PredictionApiService } from './prediction-api.service';
 
 interface ModelResult {
   name: string;
@@ -17,7 +18,44 @@ interface ModelResult {
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  backendState = 'Checking local Flask backend...';
+  liveResult: {
+    prediction: string;
+    inference_mode: string;
+    model_version: string;
+    probabilities: Record<string, number>;
+    conformal_prediction_set: string[];
+    note?: string;
+  } | null = null;
+  liveError = '';
+
+  constructor(private readonly predictionApi: PredictionApiService) {}
+
+  ngOnInit(): void {
+    this.predictionApi.health().subscribe({
+      next: (health) => {
+        this.backendState = `Connected · ${health.inference_mode} · ${health.model_version}`;
+        this.loadSamplePrediction();
+      },
+      error: () => {
+        this.backendState = 'Backend unavailable — start Flask locally for live inference.';
+      }
+    });
+  }
+
+  private loadSamplePrediction(): void {
+    fetch('sample_request.json')
+      .then((response) => response.json())
+      .then((payload: Record<string, number>) => {
+        this.predictionApi.predict(payload).subscribe({
+          next: (result) => this.liveResult = result,
+          error: () => this.liveError = 'The backend rejected the sample request.'
+        });
+      })
+      .catch(() => this.liveError = 'Sample payload could not be loaded.');
+  }
+
   readonly modelResults: ModelResult[] = [
     {
       name: 'LightGBM',
