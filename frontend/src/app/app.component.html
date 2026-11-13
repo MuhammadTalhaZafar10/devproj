@@ -176,7 +176,7 @@
       </div>
       <div class="context-grid">
         <article class="info-card" *ngIf="liveResult as result; else liveUnavailable">
-          <span class="card-index">{{ backendAvailable ? 'LIVE API' : 'DEMO PREVIEW' }}</span>
+          <span class="card-index">{{ backendAvailable ? 'LIVE API' : 'OFFLINE FALLBACK' }}</span>
           <h3>{{ result.prediction }}</h3>
           <p>Predicted energy level · {{ result.model_version }}</p>
           <div class="prediction-badge">
@@ -205,7 +205,7 @@
                 [step]="field.step"
                 [(ngModel)]="editableValues[field.key]" />
             </label>
-            <button type="submit" [disabled]="!backendAvailable || predictionLoading">
+            <button type="submit" [disabled]="predictionLoading">
               {{ predictionLoading ? 'Predicting...' : 'Get prediction' }}
             </button>
           </form>
