@@ -70,7 +70,8 @@
         </article>
       </div>
       <p class="citation-note">
-        Method adapted from the 2024 ensemble/XAI building-energy study;
+        Method adapted from Moon et al. (2024), the selected ensemble/XAI
+        building-energy study;
         BDG2 provenance follows Miller et al. (2020). This project extends that
         foundation with ordinal uncertainty reporting.
       </p>
@@ -94,6 +95,18 @@
           <small>{{ model.result }}</small>
         </article>
       </div>
+      <article class="paper-card">
+        <div>
+          <span class="card-index">SELECTED BASE PAPER · 2024</span>
+          <h3>{{ basePaper.title }}</h3>
+          <p>{{ basePaper.authors }} · {{ basePaper.venue }}</p>
+        </div>
+        <div class="paper-details">
+          <span><strong>Models</strong>{{ basePaper.models }}</span>
+          <span><strong>DOI</strong>{{ basePaper.doi }}</span>
+          <span><strong>Role here</strong>Methodological base, not an exact benchmark</span>
+        </div>
+      </article>
       <div class="improvement-panel">
         <span class="card-index">OUR EXTENSION</span>
         <h3>From “which class?” to “which class, and how certain?”</h3>
@@ -139,9 +152,9 @@
       <div class="section-heading">
         <div>
           <p class="kicker">MODEL RESULTS</p>
-          <h2>Baseline and adapted model</h2>
+          <h2>Base-paper family and our model</h2>
         </div>
-        <p class="section-note">Same frozen test split for a fair comparison.</p>
+        <p class="section-note">Project scores are measured on our frozen BDG2 test split.</p>
       </div>
 
       <div class="model-grid">
