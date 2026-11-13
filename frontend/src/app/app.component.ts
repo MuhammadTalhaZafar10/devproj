@@ -52,13 +52,13 @@ export class AppComponent implements OnInit {
     rolling_mean_24: 0
   };
   readonly editableFields = [
-    { key: 'hour', label: 'Hour of day', min: 0, max: 23, step: 1 },
-    { key: 'day', label: 'Day of month', min: 1, max: 31, step: 1 },
-    { key: 'month', label: 'Month', min: 1, max: 12, step: 1 },
-    { key: 'energy_lag_1', label: 'Energy lag · 1 hour', min: -100000, max: 100000, step: 0.01 },
-    { key: 'energy_lag_24', label: 'Energy lag · 24 hours', min: -100000, max: 100000, step: 0.01 },
-    { key: 'rolling_mean_3', label: 'Rolling mean · 3 hours', min: -100000, max: 100000, step: 0.01 },
-    { key: 'rolling_mean_24', label: 'Rolling mean · 24 hours', min: -100000, max: 100000, step: 0.01 }
+    { key: 'hour', label: 'Hour feature (encoded)', min: -5, max: 5, step: 0.01 },
+    { key: 'day', label: 'Day feature (encoded)', min: -5, max: 5, step: 0.01 },
+    { key: 'month', label: 'Month feature (encoded)', min: -5, max: 5, step: 0.01 },
+    { key: 'energy_lag_1', label: 'Energy lag · 1h (scaled)', min: -5, max: 5, step: 0.01 },
+    { key: 'energy_lag_24', label: 'Energy lag · 24h (scaled)', min: -5, max: 5, step: 0.01 },
+    { key: 'rolling_mean_3', label: 'Rolling mean · 3h (scaled)', min: -5, max: 5, step: 0.01 },
+    { key: 'rolling_mean_24', label: 'Rolling mean · 24h (scaled)', min: -5, max: 5, step: 0.01 }
   ];
 
   constructor(private readonly predictionApi: PredictionApiService) {}
@@ -83,7 +83,8 @@ export class AppComponent implements OnInit {
       .then((payload: Record<string, number>) => {
         this.samplePayload = payload;
         for (const field of this.editableFields) {
-          this.editableValues[field.key] = payload[field.key] ?? this.editableValues[field.key];
+          const value = payload[field.key] ?? this.editableValues[field.key];
+          this.editableValues[field.key] = Number(value.toFixed(2));
         }
         if (runPrediction) {
           this.submitPrediction();
@@ -154,6 +155,15 @@ export class AppComponent implements OnInit {
     { number: '02', title: 'Ensemble baseline', text: 'Gradient boosting adapted from the recent ensemble/XAI methodology.' },
     { number: '03', title: 'Calibration split', text: 'A separate 16,000-row split estimates prediction uncertainty.' },
     { number: '04', title: 'Prediction set', text: 'The API returns probabilities and an uncertainty-aware class set.' }
+  ];
+
+  readonly paperComparison = [
+    { name: 'Random Forest', paper: 'Compared', project: 'Notebook baseline', result: '89.31% accuracy', tone: 'baseline' },
+    { name: 'GBM', paper: 'Compared', project: 'Not retrained', result: 'Method retained in review', tone: 'reference' },
+    { name: 'XGBoost', paper: 'Compared', project: 'Not retrained', result: 'Method retained in review', tone: 'reference' },
+    { name: 'LightGBM', paper: 'Compared', project: 'Notebook baseline', result: '92.12% accuracy', tone: 'baseline' },
+    { name: 'CatBoost', paper: 'Compared', project: 'Not retrained', result: 'Method retained in review', tone: 'reference' },
+    { name: 'HistGradientBoosting', paper: 'Adapted here', project: 'Trained model', result: '91.68% + 91.68% coverage', tone: 'novelty' }
   ];
 
   readonly highlights = [
