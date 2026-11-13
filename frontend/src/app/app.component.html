@@ -107,6 +107,23 @@
           <span><strong>Role here</strong>Methodological base, not an exact benchmark</span>
         </div>
       </article>
+      <article class="published-results">
+        <div class="published-heading">
+          <span class="card-index">PUBLISHED RESULT PAPER · 2024</span>
+          <h3>{{ resultsPaper.title }}</h3>
+          <p>{{ resultsPaper.authors }} · {{ resultsPaper.venue }}</p>
+        </div>
+        <div class="published-finding">
+          <strong>XGBoost ranked first</strong>
+          <span>{{ resultsPaper.finding }}</span>
+          <small>DOI: {{ resultsPaper.doi }}</small>
+        </div>
+      </article>
+      <p class="comparison-warning">
+        The published result and our BDG2 scores are shown as contextual evidence,
+        not a direct leaderboard: the paper uses different building types,
+        targets, features, and evaluation metrics.
+      </p>
       <div class="improvement-panel">
         <span class="card-index">OUR EXTENSION</span>
         <h3>From “which class?” to “which class, and how certain?”</h3>
@@ -152,9 +169,9 @@
       <div class="section-heading">
         <div>
           <p class="kicker">MODEL RESULTS</p>
-          <h2>Base-paper family and our model</h2>
+          <h2>Published reference and our model</h2>
         </div>
-        <p class="section-note">Project scores are measured on our frozen BDG2 test split.</p>
+        <p class="section-note">Reference finding plus our frozen BDG2 test split.</p>
       </div>
 
       <div class="model-grid">
