@@ -3,20 +3,28 @@
     <a class="brand" href="#overview">BDG2<span>Insights</span></a>
     <nav aria-label="Main navigation">
       <a href="#overview">Overview</a>
-      <a href="#models">Model results</a>
-      <a href="#features">Features</a>
+      <a href="#research">Research contribution</a>
+      <a href="#live">Try prediction</a>
     </nav>
   </header>
 
   <main>
     <section class="hero" id="overview">
       <div class="hero-copy">
-        <p class="kicker">BUILDING DATA GENOME PROJECT 2</p>
-        <h1>Energy consumption<br /><em>made understandable.</em></h1>
+        <p class="kicker">BDG2 · BUILDING ENERGY INTELLIGENCE</p>
+        <h1>From energy data<br /><em>to trustworthy decisions.</em></h1>
         <p class="intro">
-          A visual summary of the data preparation and machine-learning results recorded in the uploaded Jupyter notebook.
+          An adapted ensemble-learning study on Building Data Genome Project 2 data,
+          extended with calibrated uncertainty for ordered energy levels.
         </p>
-        <a class="primary-link" href="#models">Explore model results <span>↓</span></a>
+        <div class="hero-actions">
+          <a class="primary-link" href="#research">See the contribution <span>↓</span></a>
+          <a class="secondary-link" href="#live">Try the demo</a>
+        </div>
+        <div class="hero-proof">
+          <span><strong>91.68%</strong> test accuracy</span>
+          <span><strong>91.68%</strong> uncertainty coverage</span>
+        </div>
       </div>
       <div class="hero-art" aria-hidden="true">
         <div class="orb orb-large"></div>
@@ -27,42 +35,73 @@
       </div>
     </section>
 
-    <section class="section-block">
+    <section class="section-block" id="research">
       <div class="section-heading">
         <div>
-          <p class="kicker">PROJECT SNAPSHOT</p>
-          <h2>What the notebook produced</h2>
+          <p class="kicker">RESEARCH CONTRIBUTION</p>
+          <h2>Beyond a single class label</h2>
         </div>
-        <p class="section-note">Results shown here are static notebook findings, not live inference.</p>
+        <p class="section-note">An adapted methodology, not an exact reproduction of the cited paper.</p>
       </div>
 
-      <div class="highlight-grid">
-        <article class="highlight-card" *ngFor="let item of highlights">
-          <span>{{ item.label }}</span>
+      <div class="research-callout">
+        <div class="callout-mark">+</div>
+        <div>
+          <span class="callout-label">PROPOSED NOVELTY</span>
+          <h3>Uncertainty-aware ordinal classification</h3>
+          <p>Energy levels are ordered as <strong>Low → Medium → High</strong>. Instead of returning only a confident-looking label, the system reports calibrated probabilities and a conformal prediction set.</p>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <article class="highlight-card" *ngFor="let item of researchMetrics">
           <strong>{{ item.value }}</strong>
+          <span>{{ item.label }}</span>
           <small>{{ item.detail }}</small>
         </article>
       </div>
 
+      <div class="workflow-grid">
+        <article class="workflow-card" *ngFor="let step of workflow">
+          <span class="card-index">{{ step.number }}</span>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.text }}</p>
+        </article>
+      </div>
+      <p class="citation-note">
+        Method adapted from the 2024 ensemble/XAI building-energy study;
+        BDG2 provenance follows Miller et al. (2020). This project extends that
+        foundation with ordinal uncertainty reporting.
+      </p>
+    </section>
+
+    <section class="section-block">
+      <div class="section-heading">
+        <div>
+          <p class="kicker">DATASET & METHOD</p>
+          <h2>Reproducible from raw rows to result</h2>
+        </div>
+        <p class="section-note">Fixed seed · fit/calibration/test separation · SHA-256 dataset manifest</p>
+      </div>
       <div class="context-grid">
         <article class="info-card">
           <span class="card-index">01</span>
           <h3>Dataset</h3>
-          <p>BDG2 energy data using the selected <strong>water_cleaned.csv</strong> meter file.</p>
+          <p>BDG2-derived energy records prepared as a three-level classification task.</p>
           <dl>
-            <div><dt>Meter data</dt><dd>17,544 × 147</dd></div>
-            <div><dt>Clean observations</dt><dd>2,383,705</dd></div>
-            <div><dt>Metadata</dt><dd>1,636 × 32</dd></div>
+            <div><dt>Rows</dt><dd>100,000</dd></div>
+            <div><dt>Features</dt><dd>300</dd></div>
+            <div><dt>Classes</dt><dd>Low / Medium / High</dd></div>
           </dl>
         </article>
         <article class="info-card">
           <span class="card-index">02</span>
-          <h3>Preparation</h3>
-          <p>Time, history, metadata, and weather information were combined before modeling.</p>
+          <h3>Evaluation design</h3>
+          <p>The test set stays frozen while calibration is performed on separate training data.</p>
           <dl>
-            <div><dt>Raw features</dt><dd>32 numeric + 8 categorical</dd></div>
-            <div><dt>Processed train</dt><dd>80,000 × 300</dd></div>
-            <div><dt>Processed test</dt><dd>20,000 × 300</dd></div>
+            <div><dt>Fit</dt><dd>64,000 rows</dd></div>
+            <div><dt>Calibration</dt><dd>16,000 rows</dd></div>
+            <div><dt>Test</dt><dd>20,000 rows</dd></div>
           </dl>
         </article>
       </div>
@@ -72,16 +111,16 @@
       <div class="section-heading">
         <div>
           <p class="kicker">MODEL RESULTS</p>
-          <h2>LightGBM leads the comparison</h2>
+          <h2>Baseline and adapted model</h2>
         </div>
-        <p class="section-note">Evaluation on the 20,000-row test split.</p>
+        <p class="section-note">Same frozen test split for a fair comparison.</p>
       </div>
 
       <div class="model-grid">
-        <article class="model-card" *ngFor="let model of modelResults; let first = first" [class.featured-model]="first">
+        <article class="model-card" *ngFor="let model of modelResults" [class.featured-model]="model.name === 'HistGradientBoosting'">
           <div class="model-heading">
             <div>
-              <span class="model-label">{{ first ? 'BEST OVERALL' : 'COMPARISON MODEL' }}</span>
+              <span class="model-label">{{ model.name === 'LightGBM' ? 'NOTEBOOK BASELINE' : (model.name === 'HistGradientBoosting' ? 'ADAPTED MODEL' : 'COMPARISON MODEL') }}</span>
               <h3>{{ model.name }}</h3>
             </div>
             <strong>{{ model.accuracy * 100 | number: '1.2-2' }}%</strong>
@@ -103,17 +142,20 @@
       <div class="section-heading">
         <div>
           <p class="kicker">LOCAL API CHECK</p>
-          <h2>Uncertainty-aware live inference</h2>
+          <h2>Try a prediction</h2>
         </div>
-        <p class="section-note">{{ backendState }}</p>
+        <p class="section-note"><span class="status-dot" [class.online]="backendAvailable"></span>{{ backendState }}</p>
       </div>
       <div class="context-grid">
         <article class="info-card" *ngIf="liveResult as result; else liveUnavailable">
-          <span class="card-index">LIVE</span>
+          <span class="card-index">{{ backendAvailable ? 'LIVE API' : 'DEMO PREVIEW' }}</span>
           <h3>{{ result.prediction }}</h3>
-          <p>Model {{ result.model_version }} · {{ result.inference_mode }} inference</p>
+          <p>Predicted energy level · {{ result.model_version }}</p>
+          <div class="prediction-badge">
+            <span>Prediction set</span>
+            <strong>{{ result.conformal_prediction_set.join(' · ') }}</strong>
+          </div>
           <dl>
-            <div><dt>Prediction set</dt><dd>{{ result.conformal_prediction_set.join(', ') }}</dd></div>
             <div *ngFor="let item of result.probabilities | keyvalue">
               <dt>{{ item.key }} probability</dt><dd>{{ item.value | percent: '1.1-1' }}</dd>
             </div>
@@ -123,8 +165,8 @@
         <ng-template #liveUnavailable>
           <article class="info-card">
             <span class="card-index">INFO</span>
-            <h3>Static dashboard remains available</h3>
-            <p>{{ liveError || 'Run Flask locally to enable this panel.' }}</p>
+            <h3>Demo is ready</h3>
+            <p>{{ liveError || 'The static preview is available. Start Flask locally to replace it with a live API result.' }}</p>
           </article>
         </ng-template>
       </div>
@@ -134,7 +176,7 @@
       <div class="section-heading">
         <div>
           <p class="kicker">FEATURE IMPORTANCE</p>
-          <h2>What influenced LightGBM most</h2>
+          <h2>What influenced the model</h2>
         </div>
       </div>
       <div class="feature-list">
@@ -147,7 +189,7 @@
   </main>
 
   <footer>
-    <span>BDG2 Insights · Notebook results presentation</span>
+    <span>BDG2 Insights · Adapted ensemble + uncertainty study</span>
     <span>Static GitHub Pages frontend</span>
   </footer>
 </div>
