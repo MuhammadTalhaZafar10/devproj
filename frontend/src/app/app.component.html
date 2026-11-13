@@ -162,6 +162,27 @@
           </dl>
           <small *ngIf="result.note">{{ result.note }}</small>
         </article>
+        <article class="info-card control-card">
+          <span class="card-index">INPUT CONTROLS</span>
+          <h3>Change features</h3>
+          <p>Adjust a few meaningful inputs. The app preserves the remaining schema fields and sends all 300 features to Flask.</p>
+          <form (ngSubmit)="submitPrediction()">
+            <label *ngFor="let field of editableFields">
+              <span>{{ field.label }}</span>
+              <input
+                type="number"
+                [name]="field.key"
+                [min]="field.min"
+                [max]="field.max"
+                [step]="field.step"
+                [(ngModel)]="editableValues[field.key]" />
+            </label>
+            <button type="submit" [disabled]="!backendAvailable || predictionLoading">
+              {{ predictionLoading ? 'Predicting...' : 'Get prediction' }}
+            </button>
+          </form>
+          <p class="form-error" *ngIf="liveError">{{ liveError }}</p>
+        </article>
         <ng-template #liveUnavailable>
           <article class="info-card">
             <span class="card-index">INFO</span>
