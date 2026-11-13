@@ -1,0 +1,109 @@
+{
+  "cohort": [
+    "Panther_lodging_Alita",
+    "Panther_office_Antonette",
+    "Panther_office_Brent",
+    "Panther_education_Alecia",
+    "Panther_education_Annetta",
+    "Panther_retail_Felix",
+    "Panther_retail_Gilbert",
+    "Panther_other_Bethel",
+    "Panther_other_Bettie"
+  ],
+  "tier": "C",
+  "protocol": "S2_blocked_temporal_2017-07-01",
+  "rows": [
+    {
+      "model": "random_forest",
+      "rmse": 5.315870889104017,
+      "mae": 2.941678660053118,
+      "r2": 0.9939546917327579,
+      "mape": 7.103847580725593,
+      "train_seconds": 92.47787666320801,
+      "n_train": 116511,
+      "n_test": 39262,
+      "r2_median": 0.9201608433592832,
+      "r2_iqr_low": 0.8405259940311776,
+      "r2_iqr_high": 0.9571646862518495
+    },
+    {
+      "model": "lightgbm",
+      "rmse": 5.6699371035949895,
+      "mae": 3.044338045243745,
+      "r2": 0.9931225714749111,
+      "mape": 6.989110680639621,
+      "train_seconds": 7.310121059417725,
+      "n_train": 116511,
+      "n_test": 39262,
+      "r2_median": 0.9145379915819933,
+      "r2_iqr_low": 0.8831077168661443,
+      "r2_iqr_high": 0.9333696203014267
+    },
+    {
+      "model": "xgboost",
+      "rmse": 5.78546779869081,
+      "mae": 3.0166325106171,
+      "r2": 0.9928394469871324,
+      "mape": 6.783147277897557,
+      "train_seconds": 9.100709676742554,
+      "n_train": 116511,
+      "n_test": 39262,
+      "r2_median": 0.9113135296990315,
+      "r2_iqr_low": 0.8934883586163845,
+      "r2_iqr_high": 0.9420295817717922
+    },
+    {
+      "model": "catboost",
+      "rmse": 5.83258887023901,
+      "mae": 3.219627216497479,
+      "r2": 0.9927223304423012,
+      "mape": 7.7004969531911325,
+      "train_seconds": 19.769959449768066,
+      "n_train": 116511,
+      "n_test": 39262,
+      "r2_median": 0.8808201249539043,
+      "r2_iqr_low": 0.8384146577561116,
+      "r2_iqr_high": 0.9196174496629242
+    },
+    {
+      "model": "gbm",
+      "rmse": 6.877035226965046,
+      "mae": 3.57864439405497,
+      "r2": 0.9898825259082453,
+      "mape": 7.817531202327458,
+      "train_seconds": 154.58530569076538,
+      "n_train": 116511,
+      "n_test": 39262,
+      "r2_median": 0.896803165761608,
+      "r2_iqr_low": 0.8719290215134781,
+      "r2_iqr_high": 0.9103418114511135
+    },
+    {
+      "model": "adaboost",
+      "rmse": 21.669487221785243,
+      "mae": 12.123712496345352,
+      "r2": 0.899546083910711,
+      "mape": 22.16268618755847,
+      "train_seconds": 54.153711795806885,
+      "n_train": 116511,
+      "n_test": 39262,
+      "r2_median": 0.22361582094288035,
+      "r2_iqr_low": -0.14464192250297514,
+      "r2_iqr_high": 0.4601577038832211
+    }
+  ],
+  "paper_bands": {
+    "rmse": [
+      5.0,
+      9.0
+    ],
+    "r2": [
+      0.59,
+      0.76
+    ],
+    "mape": [
+      8.0,
+      13.0
+    ]
+  }
+}

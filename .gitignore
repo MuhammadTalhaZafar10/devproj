@@ -22,9 +22,16 @@ dist/
 data/*.csv
 data/*.parquet
 backend/models/*.joblib
+!backend/models/model.joblib
 backend/models/*.pkl
 backend/models/*.h5
 
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# BDG2 study artifacts (large, regenerable)
+data/raw/
+data/processed/
+reports/figures/*.png
+.superpowers/
