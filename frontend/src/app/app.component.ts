@@ -19,7 +19,8 @@ interface ModelResult {
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  backendState = 'Checking local Flask backend...';
+  backendState = 'Checking inference service...';
+  backendAvailable = false;
   liveResult: {
     prediction: string;
     inference_mode: string;
@@ -27,7 +28,14 @@ export class AppComponent implements OnInit {
     probabilities: Record<string, number>;
     conformal_prediction_set: string[];
     note?: string;
-  } | null = null;
+  } | null = {
+    prediction: 'High',
+    inference_mode: 'demo',
+    model_version: 'histgb-seed42',
+    probabilities: { Low: 0.0009, Medium: 0.0001, High: 0.999 },
+    conformal_prediction_set: ['High'],
+    note: 'Preview from the validated seed-42 sample. Start Flask for live inference.'
+  };
   liveError = '';
 
   constructor(private readonly predictionApi: PredictionApiService) {}
@@ -35,11 +43,12 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.predictionApi.health().subscribe({
       next: (health) => {
+        this.backendAvailable = true;
         this.backendState = `Connected · ${health.inference_mode} · ${health.model_version}`;
         this.loadSamplePrediction();
       },
       error: () => {
-        this.backendState = 'Backend unavailable — start Flask locally for live inference.';
+        this.backendState = 'Preview mode · Flask service not connected';
       }
     });
   }
@@ -67,6 +76,15 @@ export class AppComponent implements OnInit {
       trainingTime: 12.036
     },
     {
+      name: 'HistGradientBoosting',
+      accuracy: 0.9168,
+      precision: 0.9001,
+      recall: 0.9051,
+      macroF1: 0.8985,
+      weightedF1: 0.9168,
+      trainingTime: 18.42
+    },
+    {
       name: 'Random Forest',
       accuracy: 0.8931,
       precision: 0.878,
@@ -75,6 +93,20 @@ export class AppComponent implements OnInit {
       weightedF1: 0.8917,
       trainingTime: 15.871
     }
+  ];
+
+  readonly researchMetrics = [
+    { value: '91.68%', label: 'test accuracy', detail: 'trained model' },
+    { value: '91.68%', label: 'conformal coverage', detail: '90% nominal target' },
+    { value: '0.1176', label: 'ordinal MAE', detail: 'Low < Medium < High' },
+    { value: '300', label: 'input features', detail: 'schema-controlled' }
+  ];
+
+  readonly workflow = [
+    { number: '01', title: 'BDG2 data', text: '100,000 labeled energy rows from the project dataset.' },
+    { number: '02', title: 'Ensemble baseline', text: 'Gradient boosting adapted from the recent ensemble/XAI methodology.' },
+    { number: '03', title: 'Calibration split', text: 'A separate 16,000-row split estimates prediction uncertainty.' },
+    { number: '04', title: 'Prediction set', text: 'The API returns probabilities and an uncertainty-aware class set.' }
   ];
 
   readonly highlights = [
