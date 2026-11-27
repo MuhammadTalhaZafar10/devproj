@@ -1,0 +1,200 @@
+{
+  "generated_at": "2026-11-13T09:33:07.436507+00:00",
+  "suffix": "pilot",
+  "n_buildings": 30,
+  "n_rows": 505252,
+  "models": [
+    "lightgbm"
+  ],
+  "folds": 3,
+  "channels": {
+    "channels": {
+      "lightgbm|A": {
+        "temporal": 0.067178,
+        "building": 2.620118,
+        "site": -1.580288,
+        "total": 1.107008
+      },
+      "lightgbm|B": {
+        "temporal": 0.011924,
+        "building": 0.018179,
+        "site": 0.055552,
+        "total": 0.085655
+      },
+      "lightgbm|C": {
+        "temporal": 0.000842,
+        "building": 0.037089,
+        "site": 0.048656,
+        "total": 0.086587
+      },
+      "lightgbm|D": {
+        "temporal": 0.004978,
+        "building": 0.020137,
+        "site": 0.088916,
+        "total": 0.114031
+      }
+    },
+    "feature_construction": {
+      "lightgbm|S1": 0.024974,
+      "lightgbm|S2": 0.020837,
+      "lightgbm|S3": 0.03779,
+      "lightgbm|S4": -0.00247
+    }
+  },
+  "feature_construction": [
+    {
+      "model": "lightgbm",
+      "protocol": "S1",
+      "channel": "feature_construction",
+      "delta_r2": 0.024973844302566994
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S2",
+      "channel": "feature_construction",
+      "delta_r2": 0.02083719697886166
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S3",
+      "channel": "feature_construction",
+      "delta_r2": 0.03778987472956885
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S4",
+      "channel": "feature_construction",
+      "delta_r2": -0.0024700946469350393
+    }
+  ],
+  "cells": [
+    {
+      "model": "lightgbm",
+      "protocol": "S1",
+      "tier": "A",
+      "r2": 0.9073529189671024,
+      "rmse": 76.46161045717504,
+      "mape": 17.0141526774178
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S1",
+      "tier": "B",
+      "r2": 0.9493963022171985,
+      "rmse": 56.56539568785282,
+      "mape": 5.741787803838894
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S1",
+      "tier": "C",
+      "r2": 0.9469394004738391,
+      "rmse": 57.87408912850574,
+      "mape": 5.809015357849759
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S1",
+      "tier": "D",
+      "r2": 0.9719132447764061,
+      "rmse": 41.776993656013424,
+      "mape": 4.112158852938255
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S2",
+      "tier": "A",
+      "r2": 0.8401745492889126,
+      "rmse": 102.01493141747673,
+      "mape": 23.312082944954778
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S2",
+      "tier": "B",
+      "r2": 0.9374719629436132,
+      "rmse": 63.80844639384006,
+      "mape": 5.993738227346959
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S2",
+      "tier": "C",
+      "r2": 0.9460977491980942,
+      "rmse": 59.24397953467978,
+      "mape": 6.127805027443947
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S2",
+      "tier": "D",
+      "r2": 0.9669349461769559,
+      "rmse": 46.4007916327863,
+      "mape": 4.542301844191984
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S3",
+      "tier": "A",
+      "r2": -1.779943294792895,
+      "rmse": 209.02276619194708,
+      "mape": 266.90235343437763
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S3",
+      "tier": "B",
+      "r2": 0.9192931211146776,
+      "rmse": 60.34278537102228,
+      "mape": 17.33960988844054
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S3",
+      "tier": "C",
+      "r2": 0.9090085297575334,
+      "rmse": 63.93162280998246,
+      "mape": 20.71803664917356
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S3",
+      "tier": "D",
+      "r2": 0.9467984044871023,
+      "rmse": 49.21816810657276,
+      "mape": 15.662697660685216
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S4",
+      "tier": "A",
+      "r2": -0.19965507537699004,
+      "rmse": 252.82714013826214,
+      "mape": 1828.010632462265
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S4",
+      "tier": "B",
+      "r2": 0.8637410642786563,
+      "rmse": 85.28784250076595,
+      "mape": 51.9296697876681
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S4",
+      "tier": "C",
+      "r2": 0.8603525267387774,
+      "rmse": 86.30242055510392,
+      "mape": 48.49304345498979
+    },
+    {
+      "model": "lightgbm",
+      "protocol": "S4",
+      "tier": "D",
+      "r2": 0.8578824320918423,
+      "rmse": 84.21827018293561,
+      "mape": 62.75280651391078
+    }
+  ]
+}

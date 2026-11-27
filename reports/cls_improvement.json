@@ -1,0 +1,75 @@
+{
+  "generated_at": "2026-11-27T12:34:36.208545+00:00",
+  "paper_reference": {
+    "rf_all_features_f1": 0.604,
+    "rf_selected_f1": 0.616,
+    "best_pipeline_f1": 0.622
+  },
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "protocol": "random stratified 80/20 split of 1,470 buildings; tuning only inside 5-fold CV on the training 80 %",
+  "variants": [
+    {
+      "variant": "V0",
+      "label": "Random Forest, scale-free features (reproduction)",
+      "f1_mean": 0.6040428382783957,
+      "f1_sd": 0.015363460917519608,
+      "acc_mean": 0.6040816326530611,
+      "per_seed_f1": [
+        0.6020660119524525,
+        0.606949950263632,
+        0.6296660508174902,
+        0.5996747187116729,
+        0.5818574596467311
+      ]
+    },
+    {
+      "variant": "V1",
+      "label": "V0 plus use type as an input",
+      "f1_mean": 0.6019703437135356,
+      "f1_sd": 0.020728350360219083,
+      "acc_mean": 0.601360544217687,
+      "per_seed_f1": [
+        0.6075132825132825,
+        0.6304885827273887,
+        0.5746079945945252,
+        0.6149484079535893,
+        0.5822934507788925
+      ]
+    },
+    {
+      "variant": "V2",
+      "label": "V1 with Random Forest tuned inside cross-validation",
+      "f1_mean": 0.6005443494632914,
+      "f1_sd": 0.01063026609777015,
+      "acc_mean": 0.6,
+      "per_seed_f1": [
+        0.5935200288707005,
+        0.6131176661567327,
+        0.6126706212527109,
+        0.5864947389699232,
+        0.5969186920663895
+      ]
+    },
+    {
+      "variant": "V3",
+      "label": "V1, ordinal: regress log kWh/m2, cut at training terciles",
+      "f1_mean": 0.5854611261917764,
+      "f1_sd": 0.01881708782871415,
+      "acc_mean": 0.5816326530612244,
+      "per_seed_f1": [
+        0.5905357955143847,
+        0.5579815939923035,
+        0.6030970104091019,
+        0.6061095283317506,
+        0.5695817027113405
+      ]
+    }
+  ],
+  "rule": "Report the mean of all five seeds. 'Beats the paper' only if mean exceeds 0.622 by more than one sd."
+}

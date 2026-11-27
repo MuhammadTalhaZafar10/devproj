@@ -1,0 +1,78 @@
+<section class="trace" aria-labelledby="trace-title">
+  <div class="trace-head">
+    <h2 id="trace-title">One week of electricity</h2>
+    <p class="muted">
+      {{ shortName(current().building_id) }} · {{ current().site_id }} · {{ current().primaryspaceusage }} ·
+      week of {{ current().week_start.slice(0, 10) }}
+    </p>
+  </div>
+
+  <svg class="trace-svg" [attr.viewBox]="'0 0 ' + W + ' ' + H" role="img"
+       [attr.aria-label]="'Hourly electricity use for ' + current().building_id + ' over one week'">
+    @for (d of dayBands(); track d.x) {
+      <rect [attr.x]="d.x" [attr.y]="pad.t" [attr.width]="d.w" [attr.height]="H - pad.t - pad.b"
+            [class.weekend]="d.weekend" class="day-band" />
+      <text [attr.x]="d.x + d.w / 2" [attr.y]="H - 6" text-anchor="middle" class="axis">{{ d.label }}</text>
+    }
+    @for (t of yTicks(); track t.y) {
+      <line [attr.x1]="pad.l" [attr.x2]="W - pad.r" [attr.y1]="t.y" [attr.y2]="t.y" class="grid" />
+      <text [attr.x]="pad.l - 6" [attr.y]="t.y + 4" text-anchor="end" class="axis">{{ t.label }}</text>
+    }
+    <path [attr.d]="path()" class="trace-line" />
+  </svg>
+  <p class="axis-note muted">Hourly kWh. Shaded days are the weekend.</p>
+
+  <div class="picker" role="group" aria-label="Choose a building-week">
+    @for (ex of examples(); track $index) {
+      <button type="button" class="chip" [class.on]="$index === selected()"
+              [attr.data-class]="ex.true_class" (click)="pick($index)"
+              [attr.aria-pressed]="$index === selected()"
+              [attr.aria-label]="shortName(ex.building_id) + ', ' + ex.true_class">
+        <span class="dot"></span>{{ shortName(ex.building_id) }}
+      </button>
+    }
+  </div>
+
+  <div class="verdict">
+    <div>
+      <p class="label">Class from kWh per m²</p>
+      <p class="class-pill" [attr.data-class]="current().true_class">{{ current().true_class }}</p>
+    </div>
+    <div class="verdict-model">
+      <p class="label">Model reading only the trace</p>
+      @if (prediction(); as p) {
+        <p class="class-pill" [attr.data-class]="p.prediction">{{ p.prediction }}</p>
+        <div class="stack" role="img" aria-label="Predicted class probabilities">
+          @for (c of classes; track c) {
+            <span [attr.data-class]="c" [style.flex-grow]="p.probabilities[c]"
+                  [title]="c + ' ' + pct(p.probabilities[c])"></span>
+          }
+        </div>
+        <p class="muted small">
+          {{ classes[0] }} {{ pct(p.probabilities['Low']) }} ·
+          {{ classes[1] }} {{ pct(p.probabilities['Medium']) }} ·
+          {{ classes[2] }} {{ pct(p.probabilities['High']) }}
+        </p>
+      } @else {
+        <button type="button" class="btn" (click)="classify()" [disabled]="status() === 'loading'">
+          {{ status() === 'loading' ? 'Classifying…' : 'Classify this week' }}
+        </button>
+      }
+      @if (weekAccuracy() !== null) {
+        <p class="small muted">
+          One week is a noisy sample. On weeks from buildings it has never seen, the model is right about
+          {{ pct(weekAccuracy()!) }} of the time, so expect mistakes.
+        </p>
+      }
+      @switch (status()) {
+        @case ('offline') {
+          <p class="notice">
+            The backend isn't running. Start it with <code>python -m backend.app</code>, then try again.
+            The class on the left is the stored ground truth.
+          </p>
+        }
+        @case ('error') { <p class="notice">{{ errorText() }}</p> }
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,72 @@
+<section class="feature-form" aria-labelledby="ff-title">
+  <details>
+    <summary id="ff-title">Enter the features yourself</summary>
+    <p class="muted small">
+      The model reads {{ schema()?.features?.length ?? 'a set of' }} numbers that describe one building's electricity
+      use. Fill in every field, or start from typical values and change what you like.
+    </p>
+
+    @if (loadFailed()) {
+      <p class="notice">The feature list could not be loaded, so the form is not available.</p>
+    } @else {
+      @if (form(); as f) {
+      <form [formGroup]="f" (ngSubmit)="classify()" novalidate>
+        @for (g of groups(); track g.title) {
+          <fieldset>
+            <legend>{{ g.title }}</legend>
+            <div class="ff-grid">
+              @for (field of g.fields; track field.name) {
+                <div class="ff-field">
+                  <label [for]="'ff-' + field.name">{{ field.label }}</label>
+                  <input type="number" step="any" inputmode="decimal" [id]="'ff-' + field.name"
+                         [formControlName]="field.name"
+                         [attr.aria-invalid]="showError(field.name)"
+                         [attr.aria-describedby]="showError(field.name) ? 'ff-err-' + field.name : null" />
+                  @if (showError(field.name)) {
+                    <p class="ff-error small" [id]="'ff-err-' + field.name">{{ errorMessage(field.name) }}</p>
+                  }
+                </div>
+              }
+            </div>
+          </fieldset>
+        }
+
+        <div class="ff-actions">
+          <button type="submit" class="btn" [disabled]="loading() || f.invalid">
+            {{ loading() ? 'Classifying…' : 'Classify' }}
+          </button>
+          @if (hasDefaults()) {
+            <button type="button" class="btn btn-quiet" (click)="useTypicalValues()">Use typical values</button>
+          }
+          @if (f.invalid) {
+            <span class="muted small">Every field needs a number before you can classify.</span>
+          }
+        </div>
+      </form>
+
+      @if (prediction(); as p) {
+        <div class="ff-result" aria-live="polite">
+          <p class="label">Model result</p>
+          <p class="class-pill" [attr.data-class]="p.prediction">{{ p.prediction }}</p>
+          <div class="stack" role="img" aria-label="Predicted class probabilities">
+            @for (c of classes; track c) {
+              <span [attr.data-class]="c" [style.flex-grow]="p.probabilities[c]"
+                    [title]="c + ' ' + pct(p.probabilities[c])"></span>
+            }
+          </div>
+          <p class="muted small">
+            Low {{ pct(p.probabilities['Low']) }} ·
+            Medium {{ pct(p.probabilities['Medium']) }} ·
+            High {{ pct(p.probabilities['High']) }}
+          </p>
+        </div>
+      }
+      @if (errorText()) {
+        <p class="notice" role="alert">{{ errorText() }}</p>
+      }
+      } @else {
+        <p class="muted small">Loading the feature list…</p>
+      }
+    }
+  </details>
+</section>

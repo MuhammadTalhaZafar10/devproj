@@ -1,120 +1,58 @@
-# devproj - Week 6 DevOps Lab
+# BDG2 building classification: reproducing Raymand et al. (2023)
 
-This repository now includes a complete Week 6-style backend + frontend + CI/CD setup while preserving the existing notebook/dataset context.
+Classifies buildings from the **Building Data Genome Project 2** into Low / Medium / High
+electricity performance classes from the shape of their hourly consumption, then measures how much
+the usual validation shortcuts inflate the score.
 
-## Deployed application
+**Base paper:** Raymand, Najafi, Haghighat Mamaghani, Moazami, Rinaldi (2023). *Machine learning-based
+estimation of buildings' characteristics employing electrical and chilled water consumption data:
+Pipeline optimization.* Energy and Buildings 295, 113327. https://doi.org/10.1016/j.enbuild.2023.113327
 
-(https://muhammadtalhazafar10.github.io/devproj/)
+Deployed page: https://muhammadtalhazafar10.github.io/devproj/
 
-## Repository structure
+## What is in the repo
 
-- `backend/` Flask API (`/health`, `/predict`)
-- `backend/tests/` pytest coverage for API + required structure
-- `backend/models/` safe schema artifact (`feature_schema.json`) and model notes
-- `data/` non-sensitive sample request payload
-- `docs/` provenance, environment, and limitations
-- `frontend/` Angular 19 standalone app
-- `.github/workflows/ci.yml` backend tests + frontend build on push/PR to `main`
-- `.github/workflows/pages.yml` static Angular deployment to GitHub Pages
+| Path | Purpose |
+|---|---|
+| `backend/cls/` | Features, cohort and labels, four classifiers, evaluation protocols, paper reference numbers |
+| `backend/scripts/run_cls_reproduction.py` | Reproduction: paper protocol on 1,470 buildings, plus the 100,000-row table |
+| `backend/scripts/run_cls_novelty.py` | Novelty: random rows vs whole buildings vs whole sites |
+| `backend/app.py` | Flask API (`/health`, `/model-info`, `/results`, `/novelty`, `/examples`, `/predict`) |
+| `frontend/` | Angular 19 page: paper-vs-ours table, split comparison, live classifier |
+| `reports/` | `classification_results.json`, `cls_novelty_results.json`, `cls_examples.json` |
+| `backend/ml/`, `reports/reproduction_metrics.*` | Earlier hourly-forecasting (regression) reproduction of Xie and Tummala (2025) |
 
-## Provenance and model context
+## Data
 
-- Existing notebook analyzed: `devfinal;.ipynb`
-- Existing dataset archive analyzed: `BDG2_final_100k.zip` (`BDG2_final_100k.csv`)
-- Derived schema: 300 feature columns + `target` label (`Low`/`Medium`/`High`)
-- Generated artifact: `backend/models/feature_schema.json`
+`data/raw/` holds symlinks to the Kaggle BDG2 files (`electricity.csv`, `metadata.csv`, `weather.csv`),
+fetched with `python -m backend.scripts.fetch_data`. Two tables are derived from them:
 
-No deployable trained model artifact was present in this repository.  
-Therefore, backend inference defaults to a **documented demo mode** unless `backend/models/model.joblib` (or `model.pkl`) is added.
+- **Building table**, 1,470 buildings x 66 features: the paper protocol (one row per building).
+- **100k table**, 100,000 building-weeks x 59 columns (54 features): the course-scale dataset.
 
-## Backend API
+Class labels are terciles of mean kWh/m2/year. The paper does not publish its cutoffs and its code
+repository is an empty placeholder, so this is an assumption. Every feature is computed on a series
+divided by its own mean, so absolute consumption cannot leak into the label. A test enforces that.
 
-### Endpoints
-
-- `GET /health`  
-  Returns API status, feature count, and inference mode (`model` or `demo`).
-
-- `POST /predict`  
-  Requires an exact JSON object matching all 300 schema fields.
-  - `400` for invalid JSON, missing fields, extra fields, or non-numeric values
-  - `500` for unexpected prediction-time failures
-
-### Local run
+## Run it
 
 ```bash
-cd /home/runner/work/devproj/devproj
-python -m venv .venv
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r backend/requirements.txt
-python backend/app.py
-```
-
-### Backend tests
-
-```bash
-cd /home/runner/work/devproj/devproj
-pip install -r backend/requirements.txt
+python -m backend.scripts.fetch_data                 # BDG2 from Kaggle (about 260 MB)
+python -m backend.scripts.run_cls_reproduction --rebuild
+python -m backend.scripts.run_cls_novelty
+python -m backend.scripts.sync_frontend_data         # copies result files into frontend/public
 pytest backend/tests -q
+
+python -m backend.app                                # API on http://127.0.0.1:5000
+cd frontend && npm ci && npm start                   # page on http://localhost:4200 (proxies /api)
 ```
 
-## Frontend (Angular)
+Without a trained artifact `/predict` answers 503. There is no fake fallback model.
 
-The Angular app uses schema-driven JSON validation and calls `/api/health` + `/api/predict`.
+## Honest limits
 
-Local development uses proxy forwarding:
-- `/api/*` -> `http://127.0.0.1:5000/*`
-
-### Local run
-
-```bash
-cd /home/runner/work/devproj/devproj/frontend
-npm ci
-npm start
-```
-
-### Production build
-
-```bash
-cd /home/runner/work/devproj/devproj/frontend
-npm run build
-```
-
-For GitHub Pages, workflow builds with:
-
-```bash
-npm run build -- --base-href "/<repo-name>/"
-```
-
-## CI/CD behavior
-
-### CI (`.github/workflows/ci.yml`)
-
-On push/PR to `main`:
-1. Install backend dependencies and run `pytest backend/tests -q`
-2. Run `npm ci` and `npm run build` in `frontend/`
-
-### Pages deployment (`.github/workflows/pages.yml`)
-
-On push to `main`:
-1. Build Angular frontend with repository base href
-2. Upload static artifact `frontend/dist/frontend/browser`
-3. Deploy to GitHub Pages using official Pages actions
-
-## Important limitation: Pages is static-only
-
-GitHub Pages cannot host Flask/Python inference.
-
-- The deployed site is frontend-only.
-- Live inference requires running Flask locally or hosting backend separately.
-- The frontend handles backend-unavailable scenarios with clear messaging.
-
-## Security and data handling
-
-- No secrets/tokens are committed.
-- `.gitignore` excludes virtual envs, node modules, build output, cache, env files, and unapproved model/data artifacts.
-- Only commit-safe schema/sample artifacts are included for CI reproducibility.
-
-## Research / ethics disclaimer
-
-The default demo mode output is integration-oriented and must not be interpreted as validated real-world predictive performance.  
-Any production use requires validated training reproducibility, versioned model artifact governance, and domain-appropriate risk review.
+- Not the paper's 374 features or its exact cohort (1,494 buildings), so compare sizes, not decimals.
+- Gradient Boosting uses scikit-learn defaults: the paper does not list its tuned values.
+- GitHub Pages is static, so the live classifier needs the Flask API running locally.

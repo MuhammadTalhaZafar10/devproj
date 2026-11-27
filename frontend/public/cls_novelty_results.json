@@ -1,0 +1,469 @@
+{
+  "generated_at": "2026-11-27T12:13:50.383714+00:00",
+  "headline": "Building-level weighted F1 of the best model: P1 0.77, P1b 0.72, P2 0.59 (sd 0.01 over 5 seeds), P3 0.53. A use-type-only baseline scores 0.34 under P3 and the majority class 0.16.",
+  "sample_rows": 30000,
+  "folds": 3,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "protocols": [
+    {
+      "protocol": "P1",
+      "label": "Random rows",
+      "description": "Weeks from the same building land in train and test.",
+      "models": [
+        {
+          "model": "random_forest",
+          "display": "Random Forest",
+          "accuracy": 0.6738,
+          "f1_weighted": 0.6745568380130225,
+          "f1_macro": 0.6751528980382356,
+          "balanced_accuracy": 0.674036107616209,
+          "building_accuracy": 0.7464212678936605,
+          "building_f1_weighted": 0.7474331003715455,
+          "ci_low": 0.7244643552704161,
+          "ci_high": 0.7686894450584639,
+          "test_buildings": 1467
+        },
+        {
+          "model": "lightgbm",
+          "display": "LightGBM",
+          "accuracy": 0.6599666666666667,
+          "f1_weighted": 0.6607129032823265,
+          "f1_macro": 0.6614346082464256,
+          "balanced_accuracy": 0.6603828373905326,
+          "building_accuracy": 0.7259713701431493,
+          "building_f1_weighted": 0.7267749419470808,
+          "ci_low": 0.7037900454773711,
+          "ci_high": 0.749417160555222,
+          "test_buildings": 1467
+        },
+        {
+          "model": "xgboost",
+          "display": "XGBoost",
+          "accuracy": 0.6743666666666667,
+          "f1_weighted": 0.6749698023442221,
+          "f1_macro": 0.6756521777306551,
+          "balanced_accuracy": 0.6747798047121476,
+          "building_accuracy": 0.7702794819359237,
+          "building_f1_weighted": 0.770832995841722,
+          "ci_low": 0.7485137834928735,
+          "ci_high": 0.7918599422947583,
+          "test_buildings": 1467
+        },
+        {
+          "model": "baseline_prior",
+          "display": "Majority class",
+          "accuracy": 0.34126666666666666,
+          "f1_weighted": 0.1736611229849065,
+          "f1_macro": 0.1696240701161423,
+          "balanced_accuracy": 0.3333333333333333,
+          "building_accuracy": 0.3340149965916837,
+          "building_f1_weighted": 0.16726351387830865,
+          "ci_low": 0.14571191206543968,
+          "ci_high": 0.18739162753097457,
+          "test_buildings": 1467
+        },
+        {
+          "model": "baseline_use_type",
+          "display": "Use type only",
+          "accuracy": 0.41796666666666665,
+          "f1_weighted": 0.41759157921997503,
+          "f1_macro": 0.41776410372531037,
+          "balanced_accuracy": 0.41880162424326245,
+          "building_accuracy": 0.4164962508520791,
+          "building_f1_weighted": 0.4161465347922457,
+          "ci_low": 0.39136310895662996,
+          "ci_high": 0.4428799622751091,
+          "test_buildings": 1467
+        }
+      ]
+    },
+    {
+      "protocol": "P1b",
+      "label": "Later weeks, same buildings",
+      "description": "Train on 2016 weeks, test on 2017 weeks of the same buildings.",
+      "models": [
+        {
+          "model": "random_forest",
+          "display": "Random Forest",
+          "accuracy": 0.6055176144431672,
+          "f1_weighted": 0.6045366398445525,
+          "f1_macro": 0.6044024564472985,
+          "balanced_accuracy": 0.604415926330924,
+          "building_accuracy": 0.7093023255813954,
+          "building_f1_weighted": 0.7100118154074874,
+          "ci_low": 0.6860601127384242,
+          "ci_high": 0.734089697782996,
+          "test_buildings": 1462
+        },
+        {
+          "model": "lightgbm",
+          "display": "LightGBM",
+          "accuracy": 0.5982148894448577,
+          "f1_weighted": 0.5971264366331934,
+          "f1_macro": 0.5971424666408676,
+          "balanced_accuracy": 0.5974081618321004,
+          "building_accuracy": 0.698358413132695,
+          "building_f1_weighted": 0.6989461870725712,
+          "ci_low": 0.6757878857555594,
+          "ci_high": 0.7234009641098865,
+          "test_buildings": 1462
+        },
+        {
+          "model": "xgboost",
+          "display": "XGBoost",
+          "accuracy": 0.6022719588883629,
+          "f1_weighted": 0.6011794403162224,
+          "f1_macro": 0.6010974159966516,
+          "balanced_accuracy": 0.6013468598530568,
+          "building_accuracy": 0.7168262653898769,
+          "building_f1_weighted": 0.717357828992401,
+          "ci_low": 0.6943416039252281,
+          "ci_high": 0.7411013994737283,
+          "test_buildings": 1462
+        },
+        {
+          "model": "baseline_prior",
+          "display": "Majority class",
+          "accuracy": 0.3452566096423017,
+          "f1_weighted": 0.17721842159674212,
+          "f1_macro": 0.17109826589595376,
+          "balanced_accuracy": 0.3333333333333333,
+          "building_accuracy": 0.33515731874145005,
+          "building_f1_weighted": 0.16826545715503127,
+          "ci_low": 0.14773496835499494,
+          "ci_high": 0.18975942807455023,
+          "test_buildings": 1462
+        },
+        {
+          "model": "baseline_use_type",
+          "display": "Use type only",
+          "accuracy": 0.4123334911082561,
+          "f1_weighted": 0.4120085428364814,
+          "f1_macro": 0.4122031110876099,
+          "balanced_accuracy": 0.4136244398577498,
+          "building_accuracy": 0.4165526675786594,
+          "building_f1_weighted": 0.41626713156579664,
+          "ci_low": 0.3926491787440732,
+          "ci_high": 0.4406698555691373,
+          "test_buildings": 1462
+        }
+      ]
+    },
+    {
+      "protocol": "P2",
+      "label": "Whole buildings",
+      "description": "Test buildings are unseen; their site is not. Mean and sd over seeds.",
+      "models": [
+        {
+          "model": "random_forest",
+          "display": "Random Forest",
+          "accuracy": 0.5435066666666666,
+          "f1_weighted": 0.5449397743359068,
+          "f1_macro": 0.5455613225314149,
+          "balanced_accuracy": 0.5438556385310277,
+          "building_accuracy": 0.5863667348329924,
+          "building_f1_weighted": 0.5892956938916214,
+          "ci_low": 0.563832482290539,
+          "ci_high": 0.6131241804812374,
+          "test_buildings": 1467,
+          "f1_weighted_std": 0.0026564993367720006,
+          "building_f1_weighted_std": 0.004396408035936198
+        },
+        {
+          "model": "lightgbm",
+          "display": "LightGBM",
+          "accuracy": 0.5404466666666666,
+          "f1_weighted": 0.5414301425806806,
+          "f1_macro": 0.5421164262992131,
+          "balanced_accuracy": 0.5409411742890512,
+          "building_accuracy": 0.5840490797546012,
+          "building_f1_weighted": 0.5863026026986834,
+          "ci_low": 0.5613034487067432,
+          "ci_high": 0.6107858018965143,
+          "test_buildings": 1467,
+          "f1_weighted_std": 0.004936449799893776,
+          "building_f1_weighted_std": 0.006166455022064142
+        },
+        {
+          "model": "xgboost",
+          "display": "XGBoost",
+          "accuracy": 0.5364266666666666,
+          "f1_weighted": 0.5373344012840514,
+          "f1_macro": 0.5380439140914179,
+          "balanced_accuracy": 0.5369794254194858,
+          "building_accuracy": 0.5871847307430129,
+          "building_f1_weighted": 0.5894024572111544,
+          "ci_low": 0.564708606028556,
+          "ci_high": 0.6132700619318782,
+          "test_buildings": 1467,
+          "f1_weighted_std": 0.00464470295812773,
+          "building_f1_weighted_std": 0.008764283027714941
+        },
+        {
+          "model": "baseline_prior",
+          "display": "Majority class",
+          "accuracy": 0.3394066666666667,
+          "f1_weighted": 0.17201359736033495,
+          "f1_macro": 0.1689332453243328,
+          "balanced_accuracy": 0.3333333333333333,
+          "building_accuracy": 0.3319700068166326,
+          "building_f1_weighted": 0.16547721373556365,
+          "ci_low": 0.1445807119990546,
+          "ci_high": 0.18615315644463104,
+          "test_buildings": 1467,
+          "f1_weighted_std": 0.0012956910496008396,
+          "building_f1_weighted_std": 0.0013031091172930362
+        },
+        {
+          "model": "baseline_use_type",
+          "display": "Use type only",
+          "accuracy": 0.40257333333333334,
+          "f1_weighted": 0.40090791952628935,
+          "f1_macro": 0.40072868518215216,
+          "balanced_accuracy": 0.4023527527218066,
+          "building_accuracy": 0.40013633265167015,
+          "building_f1_weighted": 0.39837947651000827,
+          "ci_low": 0.373801457186061,
+          "ci_high": 0.4236931208648116,
+          "test_buildings": 1467,
+          "f1_weighted_std": 0.007772917297369589,
+          "building_f1_weighted_std": 0.00812237969319266
+        }
+      ]
+    },
+    {
+      "protocol": "P3",
+      "label": "Whole sites",
+      "description": "Leave one site out; tercile cutoffs refitted on the training buildings.",
+      "models": [
+        {
+          "model": "random_forest",
+          "display": "Random Forest",
+          "accuracy": 0.4905333333333333,
+          "f1_weighted": 0.491800912226946,
+          "f1_macro": 0.4916060293548022,
+          "balanced_accuracy": 0.4902931089184777,
+          "building_accuracy": 0.5480572597137015,
+          "building_f1_weighted": 0.5519100048131074,
+          "ci_low": 0.524099707098846,
+          "ci_high": 0.5768860255853281,
+          "test_buildings": 1467
+        },
+        {
+          "model": "lightgbm",
+          "display": "LightGBM",
+          "accuracy": 0.47936666666666666,
+          "f1_weighted": 0.48029766813200675,
+          "f1_macro": 0.48026380754578274,
+          "balanced_accuracy": 0.47953558018564674,
+          "building_accuracy": 0.5255623721881391,
+          "building_f1_weighted": 0.5266925134106252,
+          "ci_low": 0.5004569605911398,
+          "ci_high": 0.5510285125251377,
+          "test_buildings": 1467
+        },
+        {
+          "model": "xgboost",
+          "display": "XGBoost",
+          "accuracy": 0.47223333333333334,
+          "f1_weighted": 0.4734215664878467,
+          "f1_macro": 0.47336019826564174,
+          "balanced_accuracy": 0.4723320859048615,
+          "building_accuracy": 0.5228357191547376,
+          "building_f1_weighted": 0.525422792481872,
+          "ci_low": 0.4994951929852788,
+          "ci_high": 0.5496795484339302,
+          "test_buildings": 1467
+        },
+        {
+          "model": "baseline_prior",
+          "display": "Majority class",
+          "accuracy": 0.33026666666666665,
+          "f1_weighted": 0.16399128662590626,
+          "f1_macro": 0.16551401556914236,
+          "balanced_accuracy": 0.3333333333333333,
+          "building_accuracy": 0.3237900477164281,
+          "building_f1_weighted": 0.1583936896656059,
+          "ci_low": 0.1384058802481726,
+          "ci_high": 0.17997633132831975,
+          "test_buildings": 1467
+        },
+        {
+          "model": "baseline_use_type",
+          "display": "Use type only",
+          "accuracy": 0.3434333333333333,
+          "f1_weighted": 0.3439188555703692,
+          "f1_macro": 0.3435513191267207,
+          "balanced_accuracy": 0.34284648886471647,
+          "building_accuracy": 0.34151329243353784,
+          "building_f1_weighted": 0.34139999904258317,
+          "ci_low": 0.3172302728677833,
+          "ci_high": 0.3672727669533939,
+          "test_buildings": 1467
+        }
+      ]
+    }
+  ],
+  "per_site": [
+    {
+      "site": "Gator",
+      "accuracy": 0.16417910447761194,
+      "f1_weighted": 0.0539766918830505,
+      "buildings": 67,
+      "use_type_accuracy": 0.6417910447761194,
+      "use_type_f1_weighted": 0.5550377900990703
+    },
+    {
+      "site": "Shrew",
+      "accuracy": 0.4444444444444444,
+      "f1_weighted": 0.3904761904761905,
+      "buildings": 9,
+      "use_type_accuracy": 0.3333333333333333,
+      "use_type_f1_weighted": 0.16666666666666666
+    },
+    {
+      "site": "Eagle",
+      "accuracy": 0.4215686274509804,
+      "f1_weighted": 0.4174709478984509,
+      "buildings": 102,
+      "use_type_accuracy": 0.4215686274509804,
+      "use_type_f1_weighted": 0.4267628699419843
+    },
+    {
+      "site": "Bobcat",
+      "accuracy": 0.45454545454545453,
+      "f1_weighted": 0.41880341880341887,
+      "buildings": 22,
+      "use_type_accuracy": 0.36363636363636365,
+      "use_type_f1_weighted": 0.3694805194805195
+    },
+    {
+      "site": "Moose",
+      "accuracy": 0.5,
+      "f1_weighted": 0.43636363636363634,
+      "buildings": 12,
+      "use_type_accuracy": 0.25,
+      "use_type_f1_weighted": 0.10000000000000002
+    },
+    {
+      "site": "Rat",
+      "accuracy": 0.4307116104868914,
+      "f1_weighted": 0.4423062033235697,
+      "buildings": 267,
+      "use_type_accuracy": 0.3857677902621723,
+      "use_type_f1_weighted": 0.35236190832169123
+    },
+    {
+      "site": "Bull",
+      "accuracy": 0.45528455284552843,
+      "f1_weighted": 0.45260757485623637,
+      "buildings": 123,
+      "use_type_accuracy": 0.4065040650406504,
+      "use_type_f1_weighted": 0.40104726470993524
+    },
+    {
+      "site": "Wolf",
+      "accuracy": 0.4444444444444444,
+      "f1_weighted": 0.4530062530062529,
+      "buildings": 36,
+      "use_type_accuracy": 0.3333333333333333,
+      "use_type_f1_weighted": 0.32156780840991367
+    },
+    {
+      "site": "Robin",
+      "accuracy": 0.49019607843137253,
+      "f1_weighted": 0.510462040232485,
+      "buildings": 51,
+      "use_type_accuracy": 0.23529411764705882,
+      "use_type_f1_weighted": 0.17089112067591264
+    },
+    {
+      "site": "Cockatoo",
+      "accuracy": 0.5221238938053098,
+      "f1_weighted": 0.5240382193414048,
+      "buildings": 113,
+      "use_type_accuracy": 0.23893805309734514,
+      "use_type_f1_weighted": 0.2357403138246449
+    },
+    {
+      "site": "Fox",
+      "accuracy": 0.5407407407407407,
+      "f1_weighted": 0.5391005930293543,
+      "buildings": 135,
+      "use_type_accuracy": 0.3037037037037037,
+      "use_type_f1_weighted": 0.3103409316943152
+    },
+    {
+      "site": "Panther",
+      "accuracy": 0.5631067961165048,
+      "f1_weighted": 0.5623282929084491,
+      "buildings": 103,
+      "use_type_accuracy": 0.3883495145631068,
+      "use_type_f1_weighted": 0.3608714981856286
+    },
+    {
+      "site": "Hog",
+      "accuracy": 0.581081081081081,
+      "f1_weighted": 0.5811027373527374,
+      "buildings": 148,
+      "use_type_accuracy": 0.35135135135135137,
+      "use_type_f1_weighted": 0.31877588215616387
+    },
+    {
+      "site": "Peacock",
+      "accuracy": 0.5833333333333334,
+      "f1_weighted": 0.5869565217391304,
+      "buildings": 36,
+      "use_type_accuracy": 0.3611111111111111,
+      "use_type_f1_weighted": 0.3373842592592593
+    },
+    {
+      "site": "Crow",
+      "accuracy": 0.6,
+      "f1_weighted": 0.6333333333333333,
+      "buildings": 5,
+      "use_type_accuracy": 0.0,
+      "use_type_f1_weighted": 0.0
+    },
+    {
+      "site": "Bear",
+      "accuracy": 0.6511627906976745,
+      "f1_weighted": 0.6642716267919242,
+      "buildings": 86,
+      "use_type_accuracy": 0.45348837209302323,
+      "use_type_f1_weighted": 0.3740824335917415
+    },
+    {
+      "site": "Mouse",
+      "accuracy": 0.7142857142857143,
+      "f1_weighted": 0.7142857142857143,
+      "buildings": 7,
+      "use_type_accuracy": 0.7142857142857143,
+      "use_type_f1_weighted": 0.6
+    },
+    {
+      "site": "Lamb",
+      "accuracy": 0.8551724137931035,
+      "f1_weighted": 0.8574124967591392,
+      "buildings": 145,
+      "use_type_accuracy": 0.04827586206896552,
+      "use_type_f1_weighted": 0.04603320475223262
+    }
+  ],
+  "folds_detail": "P1: StratifiedKFold(3) on rows, seed 0. P1b: train on 2016 weeks, test on 2017 weeks. P2: StratifiedGroupKFold(3) by building_id, seeds [0, 1, 2, 3, 4]; mean and sd over seeds, confidence interval is the mean of the per-seed bounds. P3: leave-one-site-out over 18 test sites (Bear, Bobcat, Bull, Cockatoo, Crow, Eagle, Fox, Gator, Hog, Lamb, Moose, Mouse, Panther, Peacock, Rat, Robin, Shrew, Wolf); sites with fewer than 5 sampled buildings (none) are always in training and never tested. P2 and P3 refit the tercile cutoffs on each fold's training buildings; P1 and P1b use the table label. Building-level scores average class probabilities over a building's test weeks; interval is a 95% percentile bootstrap over buildings (1000 resamples).",
+  "notes": [
+    "30,000-row random sample (seed 42) of the 100,000-row table; rows of one building share a label.",
+    "Row-level columns (accuracy, f1_weighted, f1_macro, balanced_accuracy) score every test week; building_* columns score one averaged prediction per building.",
+    "Baselines use the same folds: 'Majority class' predicts the training prior, 'Use type only' is LightGBM on one-hot primaryspaceusage.",
+    "Differences between protocols mix several changes at once (unseen buildings, unseen sites, different class balance in test folds); this experiment does not separate them.",
+    "Headline model: XGBoost (highest mean building-level weighted F1 over the four protocols).",
+    "Models: Random Forest, LightGBM, XGBoost. Gradient Boosting is in the reproduction table but not in this ladder (too slow for about 35 folds).",
+    "Per-site rows use LightGBM and the use-type baseline on the P3 fold for that site."
+  ]
+}

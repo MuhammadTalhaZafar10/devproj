@@ -20,6 +20,7 @@ dist/
 *.crt
 
 data/*.csv
+!data/sample_inputs.csv
 data/*.parquet
 backend/models/*.joblib
 !backend/models/model.joblib
@@ -35,3 +36,7 @@ data/raw/
 data/processed/
 reports/figures/*.png
 .superpowers/
+
+# Third-party papers (copyright) and scratch
+*.pdf
+frontend/.angular/

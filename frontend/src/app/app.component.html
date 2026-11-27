@@ -1,122 +1,242 @@
-<div class="page-shell">
-  <header class="topbar">
-    <a class="brand" href="#overview">BDG2<span>Insights</span></a>
-    <nav aria-label="Main navigation">
-      <a href="#overview">Overview</a>
-      <a href="#models">Model results</a>
-      <a href="#features">Features</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero" id="overview">
-      <div class="hero-copy">
-        <p class="kicker">BUILDING DATA GENOME PROJECT 2</p>
-        <h1>Energy consumption<br /><em>made understandable.</em></h1>
-        <p class="intro">
-          A visual summary of the data preparation and machine-learning results recorded in the uploaded Jupyter notebook.
+<header class="masthead">
+  <div class="wrap hero">
+    <div class="hero-copy">
+      <h1>Can an electricity trace tell you how much a building uses?</h1>
+      @if (results(); as r) {
+        <p class="lede">
+          We reproduce Raymand et al. (2023) on the Building Data Genome Project 2. Four classifiers sort
+          {{ r.cohort.buildings | number }} buildings into Low, Medium and High consumption using only the shape of
+          their hourly electricity use.
         </p>
-        <a class="primary-link" href="#models">Explore model results <span>↓</span></a>
+        <dl class="facts">
+          <div><dt>Rows</dt><dd>{{ r.dataset_100k.rows | number }}</dd></div>
+          <div><dt>Columns</dt><dd>{{ r.dataset_100k.columns }}</dd></div>
+          <div><dt>Buildings</dt><dd>{{ r.dataset_100k.buildings | number }}</dd></div>
+          <div><dt>Sites</dt><dd>{{ r.dataset_100k.sites }}</dd></div>
+        </dl>
+        <p class="status muted">
+          @if (health(); as h) {
+            <span class="live"></span>Backend running · {{ h.model }}
+          } @else {
+            <span class="off"></span>Backend offline · results below are stored files
+          }
+        </p>
+      } @else if (loadError()) {
+        <p class="notice">The results file could not be loaded. Run the reproduction script, then rebuild the site.</p>
+      } @else {
+        <p class="lede muted">Loading results…</p>
+      }
+    </div>
+    @if (examples().length) {
+      <app-trace-panel [examples]="examples()" [weekAccuracy]="weekAccuracy()" />
+    }
+  </div>
+</header>
+
+<main class="wrap">
+  @if (results(); as r) {
+    <section aria-labelledby="repro">
+      <h2 id="repro">Reproduction: paper against ours</h2>
+      <p class="lede">
+        Task: classify a building's performance class (Low, Medium, High, as terciles of kWh per m² per year). Setup
+        follows the paper: a random 20% test split and 5-fold cross-validation on the rest, repeated over five
+        different splits. Random Forest and Gradient Boosting come from the paper. LightGBM and XGBoost do not.
+      </p>
+
+      <div class="table-scroll">
+        <table>
+          <caption class="sr-only">Weighted F1 and accuracy for four models, with the paper's published values</caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">In paper</th>
+              <th scope="col" class="num">Test F1</th>
+              <th scope="col" class="num">Test accuracy</th>
+              <th scope="col" class="num">CV F1</th>
+              <th scope="col" class="num">Paper CV F1</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of rows(); track row.model) {
+              <tr>
+                <th scope="row">{{ row.display }}</th>
+                <td>{{ row.in_paper ? 'Yes' : 'Added by us' }}</td>
+                <td class="num">{{ row.f1_weighted | number: '1.3-3' }} <span class="muted small">±{{ row.f1_weighted_std | number: '1.3-3' }}</span></td>
+                <td class="num">{{ row.accuracy | number: '1.3-3' }}</td>
+                <td class="num">{{ row.f1_val | number: '1.3-3' }}</td>
+                <td class="num">{{ paperCv(row.model) === null ? '–' : (paperCv(row.model) | number: '1.2-2') }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <div class="orb orb-large"></div>
-        <div class="orb orb-small"></div>
-        <div class="orb-line line-one"></div>
-        <div class="orb-line line-two"></div>
-        <div class="hero-number">02</div>
-      </div>
+      <p class="small muted">
+        The paper's test set gives F1 {{ paperTest()?.['random_forest_all_features']?.f1_test | number: '1.3-3' }}
+        for Random Forest on all features and {{ paperTest()?.['optimal_pipeline']?.f1_test | number: '1.3-3' }}
+        for its best tuned pipeline (Table 3). Its cross-validated F1 for the two shared models is in the last column
+        (Figure 6a). Source: {{ r.paper.citation }}.
+      </p>
+
+      <figure>
+        <svg class="plot" [attr.viewBox]="'0 0 ' + plot.w + ' ' + (rows().length * 40 + 40)" role="img"
+             aria-label="Test F1 of each model against the paper's published values">
+          @for (t of ticks(); track t) {
+            <line [attr.x1]="x(t)" [attr.x2]="x(t)" y1="10" [attr.y2]="rows().length * 40 + 10" class="grid" />
+            <text [attr.x]="x(t)" [attr.y]="rows().length * 40 + 28" text-anchor="middle" class="axis">{{ t | number: '1.2-2' }}</text>
+          }
+          <line [attr.x1]="x(0.604)" [attr.x2]="x(0.604)" y1="10" [attr.y2]="rows().length * 40 + 10" class="ref" />
+          <line [attr.x1]="x(0.622)" [attr.x2]="x(0.622)" y1="10" [attr.y2]="rows().length * 40 + 10" class="ref strong" />
+          @for (row of rows(); track row.model; let i = $index) {
+            <text x="0" [attr.y]="i * 40 + 34" class="row-label">{{ row.display }}</text>
+            <line [attr.x1]="x(row.f1_weighted - (row.f1_weighted_std ?? 0))" [attr.x2]="x(row.f1_weighted + (row.f1_weighted_std ?? 0))"
+                  [attr.y1]="i * 40 + 30" [attr.y2]="i * 40 + 30" class="whisker" />
+            <circle [attr.cx]="x(row.f1_weighted)" [attr.cy]="i * 40 + 30" r="6" [class.added]="!row.in_paper" class="dot-ours" />
+          }
+        </svg>
+        <figcaption class="small muted">
+          Dots are our test F1 (bars show the spread over five splits); teal dots are paper models, dark dots are models we added. The dashed lines are the paper's Random Forest
+          baseline (0.604) and best tuned pipeline (0.622).
+        </figcaption>
+      </figure>
     </section>
 
-    <section class="section-block">
-      <div class="section-heading">
-        <div>
-          <p class="kicker">PROJECT SNAPSHOT</p>
-          <h2>What the notebook produced</h2>
-        </div>
-        <p class="section-note">Results shown here are static notebook findings, not live inference.</p>
-      </div>
-
-      <div class="highlight-grid">
-        <article class="highlight-card" *ngFor="let item of highlights">
-          <span>{{ item.label }}</span>
-          <strong>{{ item.value }}</strong>
-          <small>{{ item.detail }}</small>
-        </article>
-      </div>
-
-      <div class="context-grid">
-        <article class="info-card">
-          <span class="card-index">01</span>
-          <h3>Dataset</h3>
-          <p>BDG2 energy data using the selected <strong>water_cleaned.csv</strong> meter file.</p>
-          <dl>
-            <div><dt>Meter data</dt><dd>17,544 × 147</dd></div>
-            <div><dt>Clean observations</dt><dd>2,383,705</dd></div>
-            <div><dt>Metadata</dt><dd>1,636 × 32</dd></div>
-          </dl>
-        </article>
-        <article class="info-card">
-          <span class="card-index">02</span>
-          <h3>Preparation</h3>
-          <p>Time, history, metadata, and weather information were combined before modeling.</p>
-          <dl>
-            <div><dt>Raw features</dt><dd>32 numeric + 8 categorical</dd></div>
-            <div><dt>Processed train</dt><dd>80,000 × 300</dd></div>
-            <div><dt>Processed test</dt><dd>20,000 × 300</dd></div>
-          </dl>
-        </article>
-      </div>
-    </section>
-
-    <section class="section-block" id="models">
-      <div class="section-heading">
-        <div>
-          <p class="kicker">MODEL RESULTS</p>
-          <h2>LightGBM leads the comparison</h2>
-        </div>
-        <p class="section-note">Evaluation on the 20,000-row test split.</p>
-      </div>
-
-      <div class="model-grid">
-        <article class="model-card" *ngFor="let model of modelResults; let first = first" [class.featured-model]="first">
-          <div class="model-heading">
-            <div>
-              <span class="model-label">{{ first ? 'BEST OVERALL' : 'COMPARISON MODEL' }}</span>
-              <h3>{{ model.name }}</h3>
+    <section aria-labelledby="leak">
+      <h2 id="leak">The same models, 100,000 rows, two ways of splitting</h2>
+      <p class="lede">
+        Each row is one building-week. If the split is random, weeks from one building land in both train and test, and
+        the model recognises the building instead of learning what makes it high or low. Holding out whole buildings
+        removes that.
+      </p>
+      <div class="gap-chart">
+        @for (g of gap(); track g.display) {
+          <div class="gap-row">
+            <p class="gap-name">{{ g.display }}</p>
+            <div class="gap-bars">
+              <div class="bar random" [style.width.%]="g.random * 100"><span>{{ pct(g.random) }}</span></div>
+              <div class="bar whole" [style.width.%]="g.whole * 100"><span>{{ pct(g.whole) }}</span></div>
             </div>
-            <strong>{{ model.accuracy * 100 | number: '1.2-2' }}%</strong>
           </div>
-          <p class="accuracy-label">Accuracy</p>
-          <div class="accuracy-bar"><span [style.width.%]="model.accuracy * 100"></span></div>
-          <div class="metric-list">
-            <div><span>Precision</span><strong>{{ model.precision | number: '1.4-4' }}</strong></div>
-            <div><span>Recall</span><strong>{{ model.recall | number: '1.4-4' }}</strong></div>
-            <div><span>Macro F1</span><strong>{{ model.macroF1 | number: '1.4-4' }}</strong></div>
-            <div><span>Weighted F1</span><strong>{{ model.weightedF1 | number: '1.4-4' }}</strong></div>
-            <div><span>Training time</span><strong>{{ model.trainingTime }}s</strong></div>
-          </div>
-        </article>
+        }
+        <p class="legend small">
+          <span class="key random"></span>Random rows
+          <span class="key whole"></span>Whole buildings held out. Weighted F1.
+        </p>
       </div>
     </section>
 
-    <section class="section-block" id="features">
-      <div class="section-heading">
-        <div>
-          <p class="kicker">FEATURE IMPORTANCE</p>
-          <h2>What influenced LightGBM most</h2>
+    <section class="two" aria-labelledby="inside">
+      <div>
+        <h2 id="inside">Where {{ best()?.display }} goes wrong</h2>
+        <p class="lede">With whole buildings held out. Each row sums to 100% of that true class.</p>
+        <div class="cm" role="table" aria-label="Confusion matrix">
+          <div class="cm-corner"></div>
+          @for (c of [0, 1, 2]; track c) { <div class="cm-head">{{ className(c) }}</div> }
+          @for (row of confusion(); track $index; let i = $index) {
+            <div class="cm-side">{{ className(i) }}</div>
+            @for (cell of row; track $index) {
+              <div class="cm-cell" [style.background]="heat(cell.share)" [class.light]="cell.share < 0.45">
+                {{ pct(cell.share) }}
+              </div>
+            }
+          }
         </div>
+        <p class="small muted">Rows: true class. Columns: predicted class.</p>
       </div>
-      <div class="feature-list">
-        <div class="feature-row" *ngFor="let feature of topFeatures">
-          <div class="feature-name"><span>{{ feature.name }}</span><strong>{{ feature.importance }}</strong></div>
-          <div class="feature-bar"><span [style.width.%]="feature.importance / maxImportance * 100"></span></div>
-        </div>
+      <div>
+        <h2>What the model reads</h2>
+        <p class="lede">Most useful features of the served LightGBM model.</p>
+        <ol class="imp">
+          @for (f of importance(); track f.name) {
+            <li><span class="imp-name">{{ f.name }}</span><span class="imp-bar"><i [style.width.%]="f.share * 100"></i></span></li>
+          }
+        </ol>
       </div>
     </section>
-  </main>
 
-  <footer>
-    <span>BDG2 Insights · Notebook results presentation</span>
-    <span>Static GitHub Pages frontend</span>
-  </footer>
-</div>
+    @if (novelty(); as n) {
+      <section aria-labelledby="novel">
+        <h2 id="novel">What happens when the evaluation gets stricter</h2>
+        <p class="lede">{{ n.headline }}</p>
+        <div class="table-scroll">
+          <table>
+            <caption class="sr-only">Weighted F1 by validation protocol and model</caption>
+            <thead>
+              <tr>
+                <th scope="col">Protocol</th>
+                @for (m of n.protocols[0].models; track m.model) { <th scope="col" class="num">{{ m.display }}</th> }
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of n.protocols; track p.protocol) {
+                <tr>
+                  <th scope="row">{{ p.label }}<span class="small muted block">{{ p.description }}</span></th>
+                  @for (m of p.models; track m.model) {
+                    <td class="num">
+                      {{ (m.building_f1_weighted ?? m.f1_weighted) | number: '1.2-2' }}
+                      @if (m.ci_low !== undefined && m.ci_high !== undefined) {
+                        <span class="small muted block">{{ m.ci_low | number: '1.2-2' }} to {{ m.ci_high | number: '1.2-2' }}</span>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="small muted">
+          Weighted F1 per building: a building's test weeks are averaged into one prediction. Small numbers are 95%
+          confidence intervals over buildings. Gradient Boosting is left out here because it is too slow for this many folds.
+        </p>
+        @if (n.per_site?.length) {
+          <h3 class="sub">Site by site, with that site held out</h3>
+          <div class="table-scroll">
+            <table>
+              <caption class="sr-only">Weighted F1 for each held-out site, model against use-type baseline</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Site</th>
+                  <th scope="col" class="num">Buildings</th>
+                  <th scope="col" class="num">LightGBM</th>
+                  <th scope="col" class="num">Use type only</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (s of n.per_site; track s.site) {
+                  <tr>
+                    <th scope="row">{{ s.site }}</th>
+                    <td class="num">{{ s.buildings }}</td>
+                    <td class="num">{{ s.f1_weighted | number: '1.2-2' }}</td>
+                    <td class="num">{{ s.use_type_f1_weighted | number: '1.2-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+        @if (n.notes?.length) {
+          <ul class="notes small">@for (note of n.notes; track note) { <li>{{ note }}</li> }</ul>
+        }
+      </section>
+    }
+
+    <app-feature-form />
+
+    <section aria-labelledby="limits">
+      <h2 id="limits">What to keep in mind</h2>
+      <ul class="notes">
+        <li>The paper does not publish its Low, Medium and High cutoffs, and its code repository is empty. We used terciles
+            of kWh per m² per year: below {{ r.cohort.class_cutoffs_kwh_m2_yr[0] | number: '1.0-0' }} is Low, above
+            {{ r.cohort.class_cutoffs_kwh_m2_yr[1] | number: '1.0-0' }} is High.</li>
+        <li>The paper builds 374 features with several R and Python packages. We built {{ r.dataset_100k.feature_columns }}
+            simpler ones from the hourly profile, and none can encode absolute consumption.</li>
+        <li>Our cohort is {{ r.cohort.buildings | number }} buildings across {{ r.cohort.sites }} sites. The paper used
+            {{ r.paper.buildings | number }}. Numbers are comparable in size, not identical.</li>
+        <li>Gradient Boosting uses scikit-learn defaults because the paper does not list its tuned values.</li>
+      </ul>
+    </section>
+  }
+</main>
+
+<footer class="wrap foot small muted">
+  Data: Building Data Genome Project 2 (Miller et al., 2020). Generated {{ results()?.generated_at?.slice(0, 10) }}.
+</footer>
