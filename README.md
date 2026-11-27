@@ -19,6 +19,7 @@ Deployed page: https://muhammadtalhazafar10.github.io/devproj/
 | `backend/scripts/run_cls_novelty.py` | Novelty: random rows vs whole buildings vs whole sites |
 | `backend/app.py` | Flask API (`/health`, `/model-info`, `/results`, `/novelty`, `/examples`, `/predict`) |
 | `frontend/` | Angular 19 page: paper-vs-ours table, split comparison, live classifier |
+| `docs/paper/` | The research paper: `paper.pdf` (built from `paper.md` + `references.bib`), `paper.tex`, nine figures, and `make_figures.py` / `build_paper.sh` |
 | `reports/` | `classification_results.json`, `cls_novelty_results.json`, `cls_examples.json` |
 | `backend/ml/`, `reports/reproduction_metrics.*` | Earlier hourly-forecasting (regression) reproduction of Xie and Tummala (2025) |
 

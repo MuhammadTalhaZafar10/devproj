@@ -86,8 +86,10 @@ What the numbers support:
   and 0.16 for the majority class. The intervals do not overlap, so the claim is not falsified.
 - Most of the drop comes from not having seen the building (P1 0.75 to P2 0.59). Part of that is built into the data,
   because all weeks of a building share a label.
-- Holding out the site costs a further 0.04 (P2 0.59 to P3 0.55). The intervals overlap partly, so at this sample size
-  we call this "a small drop that we cannot separate from noise", not a proven effect.
+- Holding out the site costs a further 0.04 (P2 0.59 to P3 0.55 for Random Forest; 0.59 to 0.53 for LightGBM and
+  XGBoost). For Random Forest the intervals overlap; for LightGBM and XGBoost they miss each other by 0.010 and 0.015.
+  The intervals are for fixed models on sampled buildings and do not cover refitting or the single P3 run, so we call
+  this "a small drop that we cannot firmly separate from noise", not a proven effect.
 - The result varies by site: with the site held out, LightGBM scores 0.86 on Lamb and 0.66 on Bear, but only 0.05 on
   Gator, where the use-type baseline scores 0.56. Per-site numbers rest on few buildings.
 

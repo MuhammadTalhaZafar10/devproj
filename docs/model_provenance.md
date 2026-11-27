@@ -6,7 +6,7 @@ electricity use. The class is a tercile of mean kWh per m2 per year over the 1,4
 (Raymand et al. 2023) does not publish its cutoffs, so terciles are our assumption.
 
 ## Data
-- Source: Building Data Genome Project 2 (Miller et al. 2020, Scientific Data 7:438), Kaggle
+- Source: Building Data Genome Project 2 (Miller et al. 2020, Scientific Data 7:368), Kaggle
   `claytonmiller/buildingdatagenomeproject2`: `electricity.csv`, `metadata.csv`, `weather.csv`.
 - Cohort: electricity meters with at least 80 % non-missing hours, positive floor area and non-zero use:
   1,470 buildings, 18 sites.

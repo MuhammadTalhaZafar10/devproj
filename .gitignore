@@ -40,3 +40,5 @@ reports/figures/*.png
 # Third-party papers (copyright) and scratch
 *.pdf
 frontend/.angular/
+!docs/paper/paper.pdf
+docs/paper/paper.html
